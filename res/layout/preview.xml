@@ -6,12 +6,24 @@
    android:id="@+id/linearLayout01"
     >
    
+    <FrameLayout  
+        android:layout_width="wrap_content"  
+        android:layout_height="wrap_content" >   
   <SurfaceView
     android:id="@+id/camera_preview"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:layout_weight="1"
-    android:layout_gravity="center"/>
+    android:layout_height="1080px" />  
+   
+   
+ 
+    <com.example.tagidentification.DrawImageView  
+             android:id="@+id/drawIV"  
+             android:layout_width="fill_parent"  
+             android:layout_height="1080px" />  
+           
+           
+     </FrameLayout> 
+  
  
 <LinearLayout
     android:layout_width="fill_parent"

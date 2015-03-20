@@ -1,5 +1,6 @@
 package com.example.tagidentification;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -8,6 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -18,6 +20,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ImageFormat;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.BitmapDrawable;
@@ -67,7 +70,7 @@ public class CameraActivity extends Activity implements
 
     private int mScreenWidth, mScreenHeight;
     private int mFocusLeft, mFocusTop, mFocusWidth, mFocusHeight;
-    public static final String TAG = "mmmm";
+    public static final String TAG = "TagIdentification";
 	private Camera mCamera;
 //    private CameraPreview mPreview;
     private MediaRecorder mMediaRecorder;
@@ -87,13 +90,13 @@ public class CameraActivity extends Activity implements
 	private boolean frameFocus = false;
 	SurfaceView preview;
 	LinearLayout linearrLayout01;
+	private DrawImageView mDrawIV;
 	
 	
-	private static final int RESULT_REQUEST_CODE = 2;
-	private static final int CAMERA_REQUEST_CODE = 1;
 	
 	
-	@Override
+	
+	@SuppressLint("WrongCall") @Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.preview);
@@ -101,7 +104,7 @@ public class CameraActivity extends Activity implements
 		//设置屏幕方向为竖屏
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         
-		
+        
 		 // 得到屏幕的大小
         WindowManager wManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
         Display display = wManager.getDefaultDisplay();
@@ -109,28 +112,13 @@ public class CameraActivity extends Activity implements
         mScreenWidth = display.getWidth();//1080
         mFocusTop = mFocusLeft = (mScreenWidth * 3) / 8;
         mFocusWidth = mFocusHeight = mScreenWidth / 4;
-        
-//        mSupportedPreviewSizes = mCamera.getParameters()
-//                .getSupportedPreviewSizes();
-        // Create our Preview view and set it as the content of our activity.
-//        mPreview = new CameraPreview(this, mCamera);
-//        mPreview.setFocusable(true);  
-//        mPreview.setOnTouchListener(new OnTouchListener(){
-//
-//			@Override
-//			public boolean onTouch(View v, MotionEvent event) {
-//				// TODO Auto-generated method stub
-//				mPreview.focusOnTouch(event);
-//				return true;
-//			}
-//        	
-//        });
        
+         
         linearrLayout01 = (LinearLayout)findViewById(R.id.linearLayout01);
          preview = (SurfaceView) findViewById(R.id.camera_preview);
          /**用来设置surfaceview的大小*/
-         LinearLayout.LayoutParams layoutParams = 
-        		 new LinearLayout.LayoutParams(mScreenWidth, mScreenWidth);
+         FrameLayout.LayoutParams layoutParams = 
+        		 new FrameLayout.LayoutParams(mScreenWidth, mScreenWidth);
          preview.setLayoutParams(layoutParams);
          preview.setOnClickListener(this);
          //获得句柄  
@@ -140,7 +128,8 @@ public class CameraActivity extends Activity implements
 //         mHolder.setFixedSize(1280, 720);// 设置分辨率 
          //设置类型  
          mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);  
-       
+         mDrawIV = (com.example.tagidentification.DrawImageView)findViewById(R.id.drawIV);
+         mDrawIV.onDraw(new Canvas());
          
          mDraw = new DrawCaptureRect(CameraActivity.this,
         		 mFocusLeft,mFocusTop,mFocusWidth,mFocusHeight);
@@ -187,7 +176,7 @@ public class CameraActivity extends Activity implements
 	
 	
 	
-//实现焦点框的画图
+//实现焦点框的画图,本程序为自动获取焦点
 	class DrawCaptureRect extends View
     {
 	     private int mcolorfill;
@@ -279,97 +268,110 @@ public class CameraActivity extends Activity implements
 	    }
 	    return c; // returns null if camera is unavailable
 	}
-	
-	
+
 	private PictureCallback mPicture = new PictureCallback() {
 
 	    @Override
 	    public void onPictureTaken(byte[] data, Camera camera) {
 
-	        File pictureFile = getOutputMediaFile(MEDIA_TYPE_IMAGE);
-	        if (pictureFile == null){
-//	            Log.d(TAG, "Error creating media file, check storage permissions: " +
-//	                e.getMessage());
-	        	System.out.println("Error creating media file!");
-	            return;
-	        }
-
-	        try {
-	        	 bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
-	            FileOutputStream fos = new FileOutputStream(pictureFile);
-	            fos.write(data);
-	            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);//将图片压缩的流里面
-	            fos.close();
-	        } catch (FileNotFoundException e) {
-	            Log.d(TAG, "File not found: " + e.getMessage());
-	        } catch (IOException e) {
-	            Log.d(TAG, "Error accessing file: " + e.getMessage());
-	        }
-
+	        if(null != data){  
+	        	bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);//data是字节数据，将其解析成位图  
+                mCamera.stopPreview();  
+//                isPreview = false;  
+            }  
+	        Matrix matrix = new Matrix();  
+            matrix.postRotate((float)90.0);  
+            Bitmap rotaBitmap = Bitmap.createBitmap(bitmap, 
+            		0, 0, bitmap.getWidth(), bitmap.getHeight(), 
+            		matrix, false);
+            System.out.println("bitmap.getWidth() + "+bitmap.getWidth()+"bitmap.getHeight():"+bitmap.getHeight());
+            
+            //旋转后rotaBitmap是800*600.预览surfaview的大小是540×800 ???? 
+            //将800*600缩放到540×800 
+            Bitmap sizeBitmap = Bitmap.createScaledBitmap(rotaBitmap, 540, 800, true);  
+            Bitmap rectBitmap = Bitmap.createBitmap(sizeBitmap, 0, 0, 500, 500);//截取
+	        if(null != rectBitmap)  {
+	        		 savePhotos(rectBitmap);
+	         }
 		    // 拍照后重新开始预览
 	        mCamera.stopPreview();
 	        mCamera.startPreview();
 	        bitmap.recycle();//回收bitmap空间
 	    }
 
-	   
 	};
 	
-	//剪裁图片
-   public void startPhotoZoom(Uri uri){
-	   Intent intent = new Intent("com.android.camera.action.CROP");
-	   intent.setDataAndType(uri,"image/*");
-	   intent.putExtra("crop", "true");
-	   intent.putExtra("aspectX", 1);
-	   intent.putExtra("aspectY", 1);
-	   intent.putExtra("outputX", 150);//剪裁区的宽高
-	   intent.putExtra("outputY", 150);  
-	   intent.putExtra("return - data", true);  //是否将数据保留在data中
-	   Uri cropUri = Uri.fromFile( getOutputMediaFile(MEDIA_TYPE_IMAGE));//设置剪切的图片保存位置
-	   intent.putExtra(MediaStore.EXTRA_OUTPUT, cropUri);
-	   startActivityForResult(intent,RESULT_REQUEST_CODE);
-   } 
-	
+	//save photos 
+	public void savePhotos(Bitmap bm){  
+        String savePath = "/mnt/sdcard/MyTagApp/";  
+        File folder = new File(savePath);  
+        if(!folder.exists()) //如果文件夹不存在则创建  
+        {  
+            folder.mkdir();  
+        }  
+        long dataTake = System.currentTimeMillis();  
+        String jpegName = savePath + dataTake +".jpg";  
+        Log.i(TAG, "saveJpeg:jpegName--" + jpegName);  
+        try {  
+        	System.out.println("jpegName:  "+jpegName);
+            FileOutputStream fout = new FileOutputStream(jpegName);  
+            BufferedOutputStream bos = new BufferedOutputStream(fout);  
+  
+            //          //如果需要改变大小(默认的是宽960×高1280),如改成宽600×高800  
+            //          Bitmap newBM = bm.createScaledBitmap(bm, 600, 800, false);  
+  
+            bm.compress(Bitmap.CompressFormat.JPEG, 100, bos);  
+            bos.flush();  
+            bos.close();  
+            Log.i(TAG, "Photos have saved!");  
+        } catch (IOException e) {  
+            // TODO Auto-generated catch block  
+            Log.i(TAG, "Photos save  failed!");  
+            e.printStackTrace();  
+        }  
+    }  
 	
 	/** Create a file Uri for saving an image or video */
-	private static Uri getOutputMediaFileUri(int type){
-	      return Uri.fromFile(getOutputMediaFile(type));
-	}
-
-	private static File mediaStorageDir;
+//	private static Uri getOutputMediaFileUri(int type){
+//	      return Uri.fromFile(getOutputMediaFile(type));
+//	}
+//	private static File mediaFileType = getOutputMediaFile(MEDIA_TYPE_IMAGE);
+//	private static File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
+//            Environment.DIRECTORY_PICTURES), "MyTagApp");
+	private  static File mediaFile;
+	 
 	/** Create a File for saving an image or video */
-	private static File getOutputMediaFile(int type){
-	    // To be safe, you should check that the SDCard is mounted
-	    // using Environment.getExternalStorageState() before doing this.
+//	private static File getOutputMediaFile(int type){
+//	    // To be safe, you should check that the SDCard is mounted
+//	    // using Environment.getExternalStorageState() before doing this.
+//
+////	     mediaStorageDir  = new File(Environment.getExternalStoragePublicDirectory(
+////	             Environment.DIRECTORY_PICTURES), "MyTagApp");
+//	    // This location works best if you want the created images to be shared
+//	    // between applications and persist after your app has been uninstalled.
+//
+//	    // Create the storage directory if it does not exist
+//	    if (! mediaStorageDir.exists()){
+//	        if (! mediaStorageDir.mkdirs()){
+//	            Log.d("MyTagApp", "failed to create directory");
+//	            return null;
+//	        }
+//	    }
 
-	     mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
-	              Environment.DIRECTORY_PICTURES), "MyTagApp");
-	    // This location works best if you want the created images to be shared
-	    // between applications and persist after your app has been uninstalled.
-
-	    // Create the storage directory if it does not exist
-	    if (! mediaStorageDir.exists()){
-	        if (! mediaStorageDir.mkdirs()){
-	            Log.d("MyTagApp", "failed to create directory");
-	            return null;
-	        }
-	    }
-
-	    // Create a media file name
-	    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-	    File mediaFile;
-	    if (type == MEDIA_TYPE_IMAGE){
-	        mediaFile = new File(mediaStorageDir.getPath() + File.separator +
-	        "IMG_"+ timeStamp + ".jpg");
-	    } else if(type == MEDIA_TYPE_VIDEO) {
-	        mediaFile = new File(mediaStorageDir.getPath() + File.separator +
-	        "VID_"+ timeStamp + ".mp4");
-	    } else {
-	        return null;
-	    }
-
-	    return mediaFile;
-	}
+//	    // Create a media file name
+//	    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+//	    if (type == MEDIA_TYPE_IMAGE){
+//	        mediaFile = new File(mediaStorageDir.getPath() + File.separator +
+//	        "IMG_"+ timeStamp + ".jpg");
+//	    } else if(type == MEDIA_TYPE_VIDEO) {
+//	        mediaFile = new File(mediaStorageDir.getPath() + File.separator +
+//	        "VID_"+ timeStamp + ".mp4");
+//	    } else {
+//	        return null;
+//	    }
+//
+//	    return mediaFile;
+//	}
 	
 	//原来API中没有重写这个方法
 	 @Override
@@ -381,8 +383,7 @@ public class CameraActivity extends Activity implements
 
 	        // Open the default i.e. the first rear facing camera.
 	        mCamera = getCameraInstance(mCameraCurrentlyLocked);
-	        
-//	        preview.setCamera(mCamera);
+
 	    }
 	 
 	  @Override
@@ -423,52 +424,24 @@ public class CameraActivity extends Activity implements
       		
                    camera.setParameters(params);//将参数设置到我的camera
                    camera.setDisplayOrientation(90);  
-
-                     
                }  
-
-			
 		}
 
-		
-		@Override
-		protected void onActivityResult(int requestCode, int resultCode,
-				Intent data) {
-			super.onActivityResult(requestCode, resultCode, data);
-			if (resultCode != Activity.RESULT_CANCELED) {//通过结果码来判断是否拍取了图片
-				switch (requestCode) {//通过请求码来判断是哪个请求的数据
-				case RESULT_REQUEST_CODE:
-					System.out.println("已剪切并保存");
-					break;
-				case CAMERA_REQUEST_CODE://需要注意的是这里直接返回的图片信息是通过Intent data传递的，data.getData()得到该图片的uri的,然后通过该图片的uri来做相应的事
-					
-					Uri uri = Uri.fromFile(getOutputMediaFile(MEDIA_TYPE_IMAGE));
-					startPhotoZoom(uri);
-					break;
-				}
-			}
-		}
+		private static Uri uri;
+		private Bitmap cropBitmap;
+		private String imagePath;
 		
 		@Override
 		public void onClick(View v) {
 			// TODO Auto-generated method stub
 			 switch (v.getId()) {
              case R.id.button_capture: //拍照
-//                     addContentView(mDraw, new 
-//                    		 LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT));
-//                     frameFocus = true;
-                     
                      mCamera.autoFocus(this);//自动对焦
                      mCamera.takePicture(null, null, mPicture);
                      Toast.makeText(getApplicationContext(), "Yes", Toast.LENGTH_SHORT).show();
-//                     Uri uri = Uri.fromFile(getOutputMediaFile(MEDIA_TYPE_IMAGE));
-//                     startPhotoZoom(uri);
                      break;
              case R.id.camera_preview:
             	 mCamera.autoFocus(this);//自动对焦
-            	 
-//            	 System.out.println("duijao");
-//            	 linearrLayout01.removeView(mDraw);
             	 break;
               default:
                 	  break;
@@ -497,7 +470,7 @@ public class CameraActivity extends Activity implements
 			
  	           params.setPictureFormat(PixelFormat.JPEG);  
 				 
-//			 params.setPreviewSize(mScreenWidth, mScreenWidth);  
+ 	          params.setPictureSize(800, 600); 
 //			 params.setPictureSize(2592, 1936); 
  	           
 			 params.setJpegQuality(85);// 设置照片的质量
@@ -530,13 +503,11 @@ public class CameraActivity extends Activity implements
 			 //开启相机  
             if(mCamera == null)  
             {  
-                    mCamera = Camera.open(); 
-       	              params = mCamera.getParameters();
-       	           params.setPictureFormat(PixelFormat.JPEG);  
+                 mCamera = Camera.open(); 
+       	         params = mCamera.getParameters();
+       	         params.setPictureFormat(PixelFormat.JPEG);  
 				 
-//				 params.setPreviewSize(720,720);  
-//       	             requestLayout();
-//				 params.setPictureSize(1900, 1900); 
+       	         params.setPictureSize(800, 600);   
 				 params.setJpegQuality(85);// 设置照片的质量
 				 params.setRotation(90);  
 				 mCamera.setParameters(params);
@@ -550,8 +521,6 @@ public class CameraActivity extends Activity implements
 				 Log.d(TAG, "camera set parameters successfully!: "
 				         + params);  
             }
-                   
-			
 		}
 
 		@Override
