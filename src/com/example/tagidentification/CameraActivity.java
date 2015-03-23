@@ -68,7 +68,10 @@ public class CameraActivity extends Activity implements
     // The first rear facing camera
     private int mDefaultCameraId;
 
-    private int mScreenWidth, mScreenHeight;
+    public static int mScreenWidth;
+	public static int mScreenHeight;
+	public WindowManager wManager;
+	public Display display;
     private int mFocusLeft, mFocusTop, mFocusWidth, mFocusHeight;
     public static final String TAG = "TagIdentification";
 	private Camera mCamera;
@@ -96,6 +99,7 @@ public class CameraActivity extends Activity implements
 	
 	
 	
+	@SuppressWarnings("deprecation")
 	@SuppressLint("WrongCall") @Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -106,8 +110,8 @@ public class CameraActivity extends Activity implements
         
         
 		 // 得到屏幕的大小
-        WindowManager wManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
-        Display display = wManager.getDefaultDisplay();
+        wManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+        display = wManager.getDefaultDisplay();
         mScreenHeight = display.getHeight();//1800
         mScreenWidth = display.getWidth();//1080
         mFocusTop = mFocusLeft = (mScreenWidth * 3) / 8;
@@ -286,11 +290,14 @@ public class CameraActivity extends Activity implements
             		matrix, false);
             System.out.println("bitmap.getWidth() + "+bitmap.getWidth()+"bitmap.getHeight():"+bitmap.getHeight());
             
-            //旋转后rotaBitmap是800*600.预览surfaview的大小是540×800 ???? 
-            //将800*600缩放到540×800 
-            Bitmap sizeBitmap = Bitmap.createScaledBitmap(rotaBitmap, 540, 800, true);  
-            Bitmap rectBitmap = Bitmap.createBitmap(sizeBitmap, 0, 0, 500, 500);//截取
-	        if(null != rectBitmap)  {
+            //旋转后rotaBitmap是3264*2448.预览surfaview的大小是1080×1080 
+            //将3264*2448缩放到1080×1080  
+            Bitmap sizeBitmap = Bitmap.createScaledBitmap(rotaBitmap, bitmap.getHeight(), bitmap.getHeight(), true);  
+            Bitmap rectBitmap = Bitmap.createBitmap(sizeBitmap, 0, 0, bitmap.getHeight(), bitmap.getHeight());//截取
+            
+            System.out.println("rectBitmap.getWidth() :"+rectBitmap.getWidth() + "rectBitmap.getHeight() :" + rectBitmap.getHeight());
+	       
+            if(null != rectBitmap)  {
 	        		 savePhotos(rectBitmap);
 	         }
 		    // 拍照后重新开始预览
@@ -470,10 +477,10 @@ public class CameraActivity extends Activity implements
 			
  	           params.setPictureFormat(PixelFormat.JPEG);  
 				 
- 	          params.setPictureSize(800, 600); 
+// 	          params.setPictureSize(800, 600); 
 //			 params.setPictureSize(2592, 1936); 
  	           
-			 params.setJpegQuality(85);// 设置照片的质量
+			 params.setJpegQuality(100);// 设置照片的质量
 			 params.setRotation(90);  
 			 mCamera.setParameters(params);
 			 mCamera.setDisplayOrientation(90);
@@ -507,8 +514,8 @@ public class CameraActivity extends Activity implements
        	         params = mCamera.getParameters();
        	         params.setPictureFormat(PixelFormat.JPEG);  
 				 
-       	         params.setPictureSize(800, 600);   
-				 params.setJpegQuality(85);// 设置照片的质量
+//       	         params.setPictureSize(800, 600);   
+				 params.setJpegQuality(100);// 设置照片的质量
 				 params.setRotation(90);  
 				 mCamera.setParameters(params);
 				 mCamera.setDisplayOrientation(90);
