@@ -2,58 +2,45 @@ package com.example.tagidentification;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 import android.annotation.SuppressLint;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.ImageFormat;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.hardware.Camera;
 import android.hardware.Camera.AutoFocusCallback;
 import android.hardware.Camera.CameraInfo;
 import android.hardware.Camera.PictureCallback;
 import android.hardware.Camera.Size;
 import android.media.MediaRecorder;
-import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Display;
 import android.view.KeyEvent;
 import android.view.Menu;
-import android.view.MotionEvent;
+import android.view.MenuItem;
 import android.view.SurfaceHolder;
 import android.view.SurfaceHolder.Callback;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnTouchListener;
-import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 public class CameraActivity extends Activity implements 
@@ -95,7 +82,8 @@ public class CameraActivity extends Activity implements
 	LinearLayout linearrLayout01;
 	private DrawImageView mDrawIV;
 	
-	
+	private final int menu_add = 101;
+    private final int menu_help = 103;
 	
 	
 	
@@ -105,6 +93,9 @@ public class CameraActivity extends Activity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.preview);
 		
+		
+//		getActionBar().setTitle("haha");
+        getActionBar().setDisplayHomeAsUpEnabled(true);
 		//设置屏幕方向为竖屏
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         
@@ -180,7 +171,35 @@ public class CameraActivity extends Activity implements
 	
 	
 	
-//实现焦点框的画图,本程序为自动获取焦点
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+	    getMenuInflater().inflate(R.menu.main, menu);
+//	    menu.findItem(R.id.menu_pictureFromFile).setVisible(false);
+//	    menu.findItem(R.id.menu_help).setVisible(false);
+	    menu.add(0, menu_add, 1, "添加图库照片");
+        menu.add(0, menu_help, 1, "帮助");
+	    return true;
+	}
+
+
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// TODO Auto-generated method stub
+		switch(item.getItemId()){
+			case R.id.menu_pictureFromFile:
+				Toast.makeText(this, "please add photos from native file!", Toast.LENGTH_SHORT).show();	
+				 return true;
+			case R.id.menu_help:
+				System.out.println("help~~");
+				 return true;
+		}
+			 return super.onOptionsItemSelected(item);
+	}
+
+
+
+	//实现焦点框的画图,本程序为自动获取焦点
 	class DrawCaptureRect extends View
     {
 	     private int mcolorfill;
@@ -280,7 +299,8 @@ public class CameraActivity extends Activity implements
 
 	        if(null != data){  
 	        	bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);//data是字节数据，将其解析成位图  
-                mCamera.stopPreview();  
+	        	  System.out.println("bitmap.getWidth() + "+bitmap.getWidth()+"bitmap.getHeight():"+bitmap.getHeight());
+	        	mCamera.stopPreview();  
 //                isPreview = false;  
             }  
 	        Matrix matrix = new Matrix();  
@@ -288,7 +308,7 @@ public class CameraActivity extends Activity implements
             Bitmap rotaBitmap = Bitmap.createBitmap(bitmap, 
             		0, 0, bitmap.getWidth(), bitmap.getHeight(), 
             		matrix, false);
-            System.out.println("bitmap.getWidth() + "+bitmap.getWidth()+"bitmap.getHeight():"+bitmap.getHeight());
+          
             
             //旋转后rotaBitmap是3264*2448.预览surfaview的大小是1080×1080 
             //将3264*2448缩放到1080×1080  

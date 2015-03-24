@@ -4,22 +4,41 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
    android:id="@+id/linearLayout01"
-    >
+   android:background="#292421" >
    
+   <LinearLayout 
+       android:layout_gravity="center"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:orientation="horizontal"
+        >
+         <TextView 
+            android:id="@+id/textView01"
+            android:layout_width="fill_parent"
+            android:layout_height="40dp"
+            android:text="@string/scan"
+            android:textSize="25sp"
+            android:textColor="#ffffff"
+            android:layout_gravity="center"
+            android:gravity="center"
+           />  
+       
+   </LinearLayout>
     <FrameLayout  
         android:layout_width="wrap_content"  
-        android:layout_height="wrap_content" >   
+        android:layout_height="wrap_content" > 
+       
   <SurfaceView
     android:id="@+id/camera_preview"
     android:layout_width="fill_parent"
-    android:layout_height="1080px" />  
+    android:layout_height="fill_parent" />  
    
    
  
     <com.example.tagidentification.DrawImageView  
              android:id="@+id/drawIV"  
              android:layout_width="fill_parent"  
-             android:layout_height="1080px" />  
+             android:layout_height="fill_parent" />  
            
            
      </FrameLayout> 
@@ -29,14 +48,10 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:gravity="center"
-    android:orientation="horizontal" >
+    android:orientation="horizontal" 
+    >
 
-    <ImageView
-        android:id="@+id/imageview01"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-       
-         />
+   
 
     <Button
         android:id="@+id/button_capture"

@@ -35,7 +35,7 @@ import android.widget.ImageView;
 	        super.onDraw(canvas);  
 	        System.out.println(" mCameraActivity.mScreenWidth:"+ mCameraActivity.mScreenWidth);
 			canvas.drawRect(new Rect(0, 0, mCameraActivity.mScreenWidth,mCameraActivity.mScreenWidth), paint);//绘制矩形为整个surfaceView  
-	          
+//			canvas.drawRect(new Rect(330,440, 600,700), paint);
 	    }  
 	      
 }
