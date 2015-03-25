@@ -48,7 +48,7 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:gravity="center"
-    android:orientation="horizontal" 
+    android:orientation="vertical" 
     >
 
    
@@ -59,6 +59,13 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:text="Capture"
+        android:textSize="40dp" />
+       <Button
+        android:id="@+id/button_getPhotos"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="GetPhotos"
         android:textSize="40dp" />
 </LinearLayout>
 

@@ -2,9 +2,17 @@ package com.example.tagidentification;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
+
+import org.apache.http.util.EncodingUtils;
+import org.opencv.android.BaseLoaderCallback;
+import org.opencv.android.OpenCVLoader;
+import org.opencv.android.Utils;
+import org.opencv.core.Mat;
+import org.opencv.imgproc.Imgproc;
 
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
@@ -19,6 +27,7 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
+import android.graphics.Bitmap.Config;
 import android.hardware.Camera;
 import android.hardware.Camera.AutoFocusCallback;
 import android.hardware.Camera.CameraInfo;
@@ -68,6 +77,7 @@ public class CameraActivity extends Activity implements
 	long touchTime = 0;  
 	private int checkItem;
 	Button captureButton;
+	Button getPhotos;
 	private boolean isRecording = false;
 	
 	private Camera.AutoFocusCallback mAutoFocusCallback;
@@ -131,8 +141,9 @@ public class CameraActivity extends Activity implements
          
          
         captureButton = (Button) findViewById(R.id.button_capture);
+        getPhotos = (Button)findViewById(R.id.button_getPhotos);
         captureButton.setOnClickListener(this);
-        
+        getPhotos.setOnClickListener(this);
         // 得到默认的相机ID
         mDefaultCameraId = getDefaultCameraId();
         mCameraCurrentlyLocked = mDefaultCameraId;
@@ -292,6 +303,7 @@ public class CameraActivity extends Activity implements
 	    return c; // returns null if camera is unavailable
 	}
 
+	public Bitmap rectBitmap;
 	private PictureCallback mPicture = new PictureCallback() {
 
 	    @Override
@@ -313,7 +325,7 @@ public class CameraActivity extends Activity implements
             //旋转后rotaBitmap是3264*2448.预览surfaview的大小是1080×1080 
             //将3264*2448缩放到1080×1080  
             Bitmap sizeBitmap = Bitmap.createScaledBitmap(rotaBitmap, bitmap.getHeight(), bitmap.getHeight(), true);  
-            Bitmap rectBitmap = Bitmap.createBitmap(sizeBitmap, 0, 0, bitmap.getHeight(), bitmap.getHeight());//截取
+             rectBitmap = Bitmap.createBitmap(sizeBitmap, 0, 0, bitmap.getHeight(), bitmap.getHeight());//截取
             
             System.out.println("rectBitmap.getWidth() :"+rectBitmap.getWidth() + "rectBitmap.getHeight() :" + rectBitmap.getHeight());
 	       
@@ -328,6 +340,7 @@ public class CameraActivity extends Activity implements
 
 	};
 	
+	public  String jpegName;
 	//save photos 
 	public void savePhotos(Bitmap bm){  
         String savePath = "/mnt/sdcard/MyTagApp/";  
@@ -337,7 +350,7 @@ public class CameraActivity extends Activity implements
             folder.mkdir();  
         }  
         long dataTake = System.currentTimeMillis();  
-        String jpegName = savePath + dataTake +".jpg";  
+         jpegName = savePath + dataTake +".jpg";  
         Log.i(TAG, "saveJpeg:jpegName--" + jpegName);  
         try {  
         	System.out.println("jpegName:  "+jpegName);
@@ -358,6 +371,12 @@ public class CameraActivity extends Activity implements
         }  
     }  
 	
+	public Bitmap readPhotos(Bitmap bm){
+		System.out.println("jpegName :"+ jpegName);
+		String readPath = "/mnt/sdcard/MyTagApp/1.jpg"; 
+		bm = BitmapFactory.decodeFile(readPath); 
+		return bm;
+		}
 	/** Create a file Uri for saving an image or video */
 //	private static Uri getOutputMediaFileUri(int type){
 //	      return Uri.fromFile(getOutputMediaFile(type));
@@ -410,8 +429,28 @@ public class CameraActivity extends Activity implements
 
 	        // Open the default i.e. the first rear facing camera.
 	        mCamera = getCameraInstance(mCameraCurrentlyLocked);
-
+	        OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_11, getApplicationContext(), mLoaderCallback);  
+	        System.out.println("onResume sucess load OpenCV...");
 	    }
+	 
+	//OpenCV库加载并初始化成功后的回调函数  
+	    private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {  
+	  
+	        @Override  
+	        public void onManagerConnected(int status) {  
+	            // TODO Auto-generated method stub  
+	            switch (status){  
+	            case BaseLoaderCallback.SUCCESS:  
+	                System.out.println( "成功加载");  
+	                break;  
+	            default:  
+	                super.onManagerConnected(status);  
+	                System.out.println( "加载失败");  
+	                break;  
+	            }  
+	              
+	        }  
+	    };  
 	 
 	  @Override
 	    protected void onPause() {
@@ -455,7 +494,12 @@ public class CameraActivity extends Activity implements
 		}
 
 		private static Uri uri;
-		private Bitmap cropBitmap;
+		private Bitmap mBitmap;
+		private Bitmap grayBitmap;
+		private Bitmap otsuBitmap;
+		private Bitmap edgesBitmap;
+		private int mBitmapWidth;
+		private int mBitmapHeight;
 		private String imagePath;
 		
 		@Override
@@ -470,7 +514,41 @@ public class CameraActivity extends Activity implements
              case R.id.camera_preview:
             	 mCamera.autoFocus(this);//自动对焦
             	 break;
-              default:
+             case R.id.button_getPhotos://从自定义app路径获取照片
+            	 Mat rgbMat = new Mat();  
+                 Mat grayMat = new Mat(); 
+                 Mat otsuMat = new Mat();
+                 Mat edgesMat = new Mat();
+                 Mat linesMat = new Mat();
+            	 mBitmap = readPhotos(rectBitmap);
+//            	 System.out.println("mBitmap.getWidth() :"+mBitmap.getWidth() +"mBitmap.getHeight():"+mBitmap.getHeight() );
+            	 mBitmapWidth = mBitmap.getWidth();
+            	 mBitmapHeight = mBitmap.getHeight();
+            	 //显示初始图片（在预览位置上）
+//            	 mDrawIV.setImageBitmap(mBitmap);
+            	 
+            	 //原始图像灰度化
+            	 grayBitmap = Bitmap.createBitmap(mBitmap.getWidth(), mBitmap.getHeight(), Config.RGB_565);  
+            	 Utils.bitmapToMat(mBitmap, rgbMat);//convert original bitmap to Mat, R G B.  
+            	 Imgproc.cvtColor(rgbMat, grayMat, Imgproc.COLOR_RGB2GRAY);//rgbMat to gray grayMat  
+            	        Utils.matToBitmap(grayMat, grayBitmap); //convert mat to bitmap  
+            	 //显示灰度图像
+//            	 mDrawIV.setImageBitmap(grayBitmap);
+            	        
+            	 //灰度图像大津法二值化
+            	 otsuBitmap = Bitmap.createBitmap(grayBitmap);  
+            	 Imgproc.threshold(grayMat, otsuMat, 0, 255, Imgproc.THRESH_BINARY|Imgproc.THRESH_OTSU);
+            	 Utils.matToBitmap(otsuMat, otsuBitmap);
+            	 //显示大津法二值化图像
+            	 mDrawIV.setImageBitmap(otsuBitmap);
+            	 
+            	 //Hough变换矫正图像
+            	 edgesBitmap = Bitmap.createBitmap(otsuBitmap);
+            	 Imgproc.Canny(otsuMat, edgesMat, 50, 150);
+            	 Utils.matToBitmap(edgesMat, edgesBitmap);
+            	 Imgproc.HoughLines(edgesMat, linesMat, 1, Math.PI/360, mBitmapWidth/5);
+            	 break;
+             default:
                 	  break;
 			 }
 		}
