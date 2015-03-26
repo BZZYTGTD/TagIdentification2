@@ -18,6 +18,7 @@ import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -36,6 +37,7 @@ import android.hardware.Camera.Size;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.Display;
 import android.view.KeyEvent;
@@ -501,6 +503,7 @@ public class CameraActivity extends Activity implements
 		private int mBitmapWidth;
 		private int mBitmapHeight;
 		private String imagePath;
+		private String resultUrl = "result.txt";
 		
 		@Override
 		public void onClick(View v) {
@@ -515,44 +518,85 @@ public class CameraActivity extends Activity implements
             	 mCamera.autoFocus(this);//自动对焦
             	 break;
              case R.id.button_getPhotos://从自定义app路径获取照片
-            	 Mat rgbMat = new Mat();  
-                 Mat grayMat = new Mat(); 
-                 Mat otsuMat = new Mat();
-                 Mat edgesMat = new Mat();
-                 Mat linesMat = new Mat();
+//            	 Mat rgbMat = new Mat();  
+//                 Mat grayMat = new Mat(); 
+//                 Mat otsuMat = new Mat();
+//                 Mat edgesMat = new Mat();
+//                 Mat linesMat = new Mat();
             	 mBitmap = readPhotos(rectBitmap);
-//            	 System.out.println("mBitmap.getWidth() :"+mBitmap.getWidth() +"mBitmap.getHeight():"+mBitmap.getHeight() );
-            	 mBitmapWidth = mBitmap.getWidth();
-            	 mBitmapHeight = mBitmap.getHeight();
-            	 //显示初始图片（在预览位置上）
-//            	 mDrawIV.setImageBitmap(mBitmap);
-            	 
-            	 //原始图像灰度化
-            	 grayBitmap = Bitmap.createBitmap(mBitmap.getWidth(), mBitmap.getHeight(), Config.RGB_565);  
-            	 Utils.bitmapToMat(mBitmap, rgbMat);//convert original bitmap to Mat, R G B.  
-            	 Imgproc.cvtColor(rgbMat, grayMat, Imgproc.COLOR_RGB2GRAY);//rgbMat to gray grayMat  
-            	        Utils.matToBitmap(grayMat, grayBitmap); //convert mat to bitmap  
-            	 //显示灰度图像
-//            	 mDrawIV.setImageBitmap(grayBitmap);
-            	        
-            	 //灰度图像大津法二值化
-            	 otsuBitmap = Bitmap.createBitmap(grayBitmap);  
-            	 Imgproc.threshold(grayMat, otsuMat, 0, 255, Imgproc.THRESH_BINARY|Imgproc.THRESH_OTSU);
-            	 Utils.matToBitmap(otsuMat, otsuBitmap);
-            	 //显示大津法二值化图像
-            	 mDrawIV.setImageBitmap(otsuBitmap);
-            	 
-            	 //Hough变换矫正图像
-            	 edgesBitmap = Bitmap.createBitmap(otsuBitmap);
-            	 Imgproc.Canny(otsuMat, edgesMat, 50, 150);
-            	 Utils.matToBitmap(edgesMat, edgesBitmap);
-            	 Imgproc.HoughLines(edgesMat, linesMat, 1, Math.PI/360, mBitmapWidth/5);
+            	 processPhotos(mBitmap);//返回的是大津法的图片
+////            	 System.out.println("mBitmap.getWidth() :"+mBitmap.getWidth() +"mBitmap.getHeight():"+mBitmap.getHeight() );
+//            	 mBitmapWidth = mBitmap.getWidth();
+//            	 mBitmapHeight = mBitmap.getHeight();
+//            	 //显示初始图片（在预览位置上）
+////            	 mDrawIV.setImageBitmap(mBitmap);
+//            	 
+//            	 //原始图像灰度化
+//            	 grayBitmap = Bitmap.createBitmap(mBitmap.getWidth(), mBitmap.getHeight(), Config.RGB_565);  
+//            	 Utils.bitmapToMat(mBitmap, rgbMat);//convert original bitmap to Mat, R G B.  
+//            	 Imgproc.cvtColor(rgbMat, grayMat, Imgproc.COLOR_RGB2GRAY);//rgbMat to gray grayMat  
+//            	        Utils.matToBitmap(grayMat, grayBitmap); //convert mat to bitmap  
+//            	 //显示灰度图像
+////            	 mDrawIV.setImageBitmap(grayBitmap);
+//            	        
+//            	 //灰度图像大津法二值化
+//            	 otsuBitmap = Bitmap.createBitmap(grayBitmap);  
+//            	 Imgproc.threshold(grayMat, otsuMat, 0, 255, Imgproc.THRESH_BINARY|Imgproc.THRESH_OTSU);
+//            	 Utils.matToBitmap(otsuMat, otsuBitmap);
+//            	 //显示大津法二值化图像
+//            	 mDrawIV.setImageBitmap(otsuBitmap);
+//            	 savePhotos(otsuBitmap);
+//            	 
+//            	 //Hough变换矫正图像
+//            	 edgesBitmap = Bitmap.createBitmap(otsuBitmap);
+//            	 Imgproc.Canny(otsuMat, edgesMat, 50, 150);
+//            	 Utils.matToBitmap(edgesMat, edgesBitmap);
+//            	 Imgproc.HoughLines(edgesMat, linesMat, 1, Math.PI/360, mBitmapWidth/5);
+            	 Intent results = new Intent(this, ResultsActivity.class);
+            	 results.putExtra("IMAGE_PATH", jpegName);
+            	 results.putExtra("RESULT_PATH", resultUrl);
+            	 startActivity(results);
             	 break;
              default:
                 	  break;
 			 }
 		}
 
+		public Bitmap processPhotos(Bitmap bitmap){
+			 Mat rgbMat = new Mat();  
+             Mat grayMat = new Mat(); 
+             Mat otsuMat = new Mat();
+             Mat edgesMat = new Mat();
+             Mat linesMat = new Mat();
+             mBitmapWidth = mBitmap.getWidth();
+        	 mBitmapHeight = mBitmap.getHeight();
+        	 //显示初始图片（在预览位置上）
+//        	 mDrawIV.setImageBitmap(mBitmap);
+        	 
+        	 //原始图像灰度化
+        	 grayBitmap = Bitmap.createBitmap(mBitmap.getWidth(), mBitmap.getHeight(), Config.RGB_565);  
+        	 Utils.bitmapToMat(mBitmap, rgbMat);//convert original bitmap to Mat, R G B.  
+        	 Imgproc.cvtColor(rgbMat, grayMat, Imgproc.COLOR_RGB2GRAY);//rgbMat to gray grayMat  
+        	        Utils.matToBitmap(grayMat, grayBitmap); //convert mat to bitmap  
+        	 //显示灰度图像
+//        	 mDrawIV.setImageBitmap(grayBitmap);
+        	        
+        	 //灰度图像大津法二值化
+        	 otsuBitmap = Bitmap.createBitmap(grayBitmap);  
+        	 Imgproc.threshold(grayMat, otsuMat, 0, 255, Imgproc.THRESH_BINARY|Imgproc.THRESH_OTSU);
+        	 Utils.matToBitmap(otsuMat, otsuBitmap);
+        	 //显示大津法二值化图像
+        	 mDrawIV.setImageBitmap(otsuBitmap);
+        	 savePhotos(otsuBitmap);
+        	 
+        	 //Hough变换矫正图像
+//        	 edgesBitmap = Bitmap.createBitmap(otsuBitmap);
+//        	 Imgproc.Canny(otsuMat, edgesMat, 50, 150);
+//        	 Utils.matToBitmap(edgesMat, edgesBitmap);
+//        	 Imgproc.HoughLines(edgesMat, linesMat, 1, Math.PI/360, mBitmapWidth/5);
+			return otsuBitmap;
+			
+		}
 		@Override
 		public void surfaceChanged(SurfaceHolder holder, int format, int width,
 				int height) {
