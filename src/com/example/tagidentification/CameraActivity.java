@@ -3,6 +3,7 @@ package com.example.tagidentification;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
@@ -72,6 +73,8 @@ public class CameraActivity extends Activity implements
 	public Display display;
     private int mFocusLeft, mFocusTop, mFocusWidth, mFocusHeight;
     public static final String TAG = "TagIdentification";
+	private static final int TAKE_PICTURE = 1;
+	private static final int SELECT_FILE = 2;
 	private Camera mCamera;
 //    private CameraPreview mPreview;
     private MediaRecorder mMediaRecorder;
@@ -187,8 +190,8 @@ public class CameraActivity extends Activity implements
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 	    getMenuInflater().inflate(R.menu.main, menu);
-//	    menu.findItem(R.id.menu_pictureFromFile).setVisible(false);
-//	    menu.findItem(R.id.menu_help).setVisible(false);
+//	    menu.findItem(R.id.menu_pictureFromFile).setVisible(true);
+//	    menu.findItem(R.id.menu_help).setVisible(true);
 	    menu.add(0, menu_add, 1, "添加图库照片");
         menu.add(0, menu_help, 1, "帮助");
 	    return true;
@@ -196,20 +199,22 @@ public class CameraActivity extends Activity implements
 
 
 
+	@SuppressLint("SdCardPath")
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// TODO Auto-generated method stub
 		switch(item.getItemId()){
-			case R.id.menu_pictureFromFile:
-				Toast.makeText(this, "please add photos from native file!", Toast.LENGTH_SHORT).show();	
+			case menu_add:
+				readPath = "/mnt/sdcard/MyTagApp/1.jpg";
+				mBitmap = BitmapFactory.decodeFile(readPath);
+				processPhotos(mBitmap);
 				 return true;
-			case R.id.menu_help:
-				System.out.println("help~~");
+			case menu_help:
+				Toast.makeText(this, "help~", Toast.LENGTH_SHORT).show();
 				 return true;
 		}
 			 return super.onOptionsItemSelected(item);
 	}
-
 
 
 	//实现焦点框的画图,本程序为自动获取焦点
@@ -333,7 +338,9 @@ public class CameraActivity extends Activity implements
 	       
             if(null != rectBitmap)  {
 	        		 savePhotos(rectBitmap);
+                	 
 	         }
+   		
 		    // 拍照后重新开始预览
 	        mCamera.stopPreview();
 	        mCamera.startPreview();
@@ -372,10 +379,11 @@ public class CameraActivity extends Activity implements
             e.printStackTrace();  
         }  
     }  
-	
+	private String readPath;
 	public Bitmap readPhotos(Bitmap bm){
 		System.out.println("jpegName :"+ jpegName);
-		String readPath = "/mnt/sdcard/MyTagApp/1.jpg"; 
+//		String readPath = "/mnt/sdcard/MyTagApp/1.jpg"; 
+		readPath = jpegName; 
 		bm = BitmapFactory.decodeFile(readPath); 
 		return bm;
 		}
@@ -504,6 +512,8 @@ public class CameraActivity extends Activity implements
 		private int mBitmapHeight;
 		private String imagePath;
 		private String resultUrl = "result.txt";
+		private Intent results;
+		private boolean process = false;
 		
 		@Override
 		public void onClick(View v) {
@@ -513,56 +523,21 @@ public class CameraActivity extends Activity implements
                      mCamera.autoFocus(this);//自动对焦
                      mCamera.takePicture(null, null, mPicture);
                      Toast.makeText(getApplicationContext(), "Yes", Toast.LENGTH_SHORT).show();
+                     
                      break;
              case R.id.camera_preview:
             	 mCamera.autoFocus(this);//自动对焦
             	 break;
              case R.id.button_getPhotos://从自定义app路径获取照片
-//            	 Mat rgbMat = new Mat();  
-//                 Mat grayMat = new Mat(); 
-//                 Mat otsuMat = new Mat();
-//                 Mat edgesMat = new Mat();
-//                 Mat linesMat = new Mat();
             	 mBitmap = readPhotos(rectBitmap);
             	 processPhotos(mBitmap);//返回的是大津法的图片
-////            	 System.out.println("mBitmap.getWidth() :"+mBitmap.getWidth() +"mBitmap.getHeight():"+mBitmap.getHeight() );
-//            	 mBitmapWidth = mBitmap.getWidth();
-//            	 mBitmapHeight = mBitmap.getHeight();
-//            	 //显示初始图片（在预览位置上）
-////            	 mDrawIV.setImageBitmap(mBitmap);
-//            	 
-//            	 //原始图像灰度化
-//            	 grayBitmap = Bitmap.createBitmap(mBitmap.getWidth(), mBitmap.getHeight(), Config.RGB_565);  
-//            	 Utils.bitmapToMat(mBitmap, rgbMat);//convert original bitmap to Mat, R G B.  
-//            	 Imgproc.cvtColor(rgbMat, grayMat, Imgproc.COLOR_RGB2GRAY);//rgbMat to gray grayMat  
-//            	        Utils.matToBitmap(grayMat, grayBitmap); //convert mat to bitmap  
-//            	 //显示灰度图像
-////            	 mDrawIV.setImageBitmap(grayBitmap);
-//            	        
-//            	 //灰度图像大津法二值化
-//            	 otsuBitmap = Bitmap.createBitmap(grayBitmap);  
-//            	 Imgproc.threshold(grayMat, otsuMat, 0, 255, Imgproc.THRESH_BINARY|Imgproc.THRESH_OTSU);
-//            	 Utils.matToBitmap(otsuMat, otsuBitmap);
-//            	 //显示大津法二值化图像
-//            	 mDrawIV.setImageBitmap(otsuBitmap);
-//            	 savePhotos(otsuBitmap);
-//            	 
-//            	 //Hough变换矫正图像
-//            	 edgesBitmap = Bitmap.createBitmap(otsuBitmap);
-//            	 Imgproc.Canny(otsuMat, edgesMat, 50, 150);
-//            	 Utils.matToBitmap(edgesMat, edgesBitmap);
-//            	 Imgproc.HoughLines(edgesMat, linesMat, 1, Math.PI/360, mBitmapWidth/5);
-            	 Intent results = new Intent(this, ResultsActivity.class);
-            	 results.putExtra("IMAGE_PATH", jpegName);
-            	 results.putExtra("RESULT_PATH", resultUrl);
-            	 startActivity(results);
             	 break;
              default:
                 	  break;
 			 }
 		}
 
-		public Bitmap processPhotos(Bitmap bitmap){
+		public void processPhotos(Bitmap bitmap){
 			 Mat rgbMat = new Mat();  
              Mat grayMat = new Mat(); 
              Mat otsuMat = new Mat();
@@ -586,6 +561,7 @@ public class CameraActivity extends Activity implements
         	 Imgproc.threshold(grayMat, otsuMat, 0, 255, Imgproc.THRESH_BINARY|Imgproc.THRESH_OTSU);
         	 Utils.matToBitmap(otsuMat, otsuBitmap);
         	 //显示大津法二值化图像
+        	 
         	 mDrawIV.setImageBitmap(otsuBitmap);
         	 savePhotos(otsuBitmap);
         	 
@@ -594,9 +570,13 @@ public class CameraActivity extends Activity implements
 //        	 Imgproc.Canny(otsuMat, edgesMat, 50, 150);
 //        	 Utils.matToBitmap(edgesMat, edgesBitmap);
 //        	 Imgproc.HoughLines(edgesMat, linesMat, 1, Math.PI/360, mBitmapWidth/5);
-			return otsuBitmap;
+        	 results = new Intent(this, ResultsActivity.class);
+        	 results.putExtra("IMAGE_PATH", jpegName);
+        	 results.putExtra("RESULT_PATH", resultUrl);
+        	 startActivity(results);
 			
 		}
+		
 		@Override
 		public void surfaceChanged(SurfaceHolder holder, int format, int width,
 				int height) {

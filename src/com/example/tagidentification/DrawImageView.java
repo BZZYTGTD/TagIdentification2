@@ -22,10 +22,10 @@ import android.widget.ImageView;
 	    Paint paint = new Paint();  
 	    {  
 	        paint.setAntiAlias(true);  
-	        paint.setColor(Color.BLUE);  
+//	        paint.setColor(Color.BLUE);  
 	        paint.setStyle(Style.STROKE);  
 	        paint.setStrokeWidth(2.5f);//设置线宽  
-	        paint.setAlpha(100);  
+	        paint.setAlpha(0);  //设置矩形线是无色透明的
 	    };  
 	      
 	    private CameraActivity mCameraActivity;
