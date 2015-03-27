@@ -14,6 +14,7 @@ import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
+
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
@@ -36,6 +37,8 @@ import android.hardware.Camera.CameraInfo;
 import android.hardware.Camera.PictureCallback;
 import android.hardware.Camera.Size;
 import android.media.MediaRecorder;
+import android.media.MediaScannerConnection;
+import android.media.MediaScannerConnection.MediaScannerConnectionClient;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -57,7 +60,9 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 public class CameraActivity extends Activity implements 
-	Callback, OnClickListener, AutoFocusCallback{
+	Callback, OnClickListener, AutoFocusCallback
+//	,MediaScannerConnectionClient
+	{
 
 	public static final int MEDIA_TYPE_IMAGE = 1;
 	public static final int MEDIA_TYPE_VIDEO = 2;
@@ -154,6 +159,11 @@ public class CameraActivity extends Activity implements
         mDefaultCameraId = getDefaultCameraId();
         mCameraCurrentlyLocked = mDefaultCameraId;
 //        System.out.println("mCameraCurrentlyLocked "+mCameraCurrentlyLocked);
+//        if(msc!=null){
+//            msc.disconnect();
+//        }
+//        msc=new MediaScannerConnection(CameraActivity.this, CameraActivity.this);
+//        msc.connect();
 	}
 
 	 //双击退出
@@ -207,12 +217,12 @@ public class CameraActivity extends Activity implements
 		switch(item.getItemId()){
 			case menu_add:
 //				//读取指定文件夹下固定图片并直接进行处理
-//				readPath = "/mnt/sdcard/MyTagApp/1.jpg";
-//				mBitmap = BitmapFactory.decodeFile(readPath);
-//				processPhotos(mBitmap);
-				Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-		    	intent.setType("image/*");
-		    	startActivityForResult(intent, SELECT_FILE);
+				readPath = "/mnt/sdcard/MyTagApp/1.jpg";
+				mBitmap = BitmapFactory.decodeFile(readPath);
+				processPhotos(mBitmap);
+//				Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+//		    	intent.setType("image/*");
+//		    	startActivityForResult(intent, SELECT_FILE);
 				 return true;
 			case menu_help:
 				Toast.makeText(this, "help~", Toast.LENGTH_SHORT).show();
@@ -380,10 +390,11 @@ public class CameraActivity extends Activity implements
 
 	};
 	
-	public  String jpegName;
+	private  String jpegName;
+	private String savePath;
 	//save photos 
 	public void savePhotos(Bitmap bm){  
-        String savePath = "/mnt/sdcard/MyTagApp/";  
+         savePath = "/mnt/sdcard/MyTagApp/";  
         File folder = new File(savePath);  
         if(!folder.exists()) //如果文件夹不存在则创建  
         {  
@@ -689,6 +700,25 @@ public class CameraActivity extends Activity implements
 			// TODO Auto-generated method stub
 			
 		}
+//		MediaScannerConnection msc;
+//		@Override
+//		public void onMediaScannerConnected() {
+//		    try {
+//                Log.e(TAG, "Start scan!");
+//                msc.scanFile(savePath, "image/*");
+//		    } catch (Exception e) {
+//                // TODO: handle exception
+//                e.printStackTrace();
+//		    }
+//			
+//		}
+//
+//		@Override
+//		public void onScanCompleted(String path, Uri uri) {
+//			msc.disconnect();
+//            Log.e(TAG, "Scan finished!");
+//			
+//		}
 	   
 
 }
