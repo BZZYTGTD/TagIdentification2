@@ -14,7 +14,6 @@ import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
-
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
@@ -22,6 +21,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -39,6 +39,7 @@ import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Display;
 import android.view.KeyEvent;
@@ -205,15 +206,45 @@ public class CameraActivity extends Activity implements
 		// TODO Auto-generated method stub
 		switch(item.getItemId()){
 			case menu_add:
-				readPath = "/mnt/sdcard/MyTagApp/1.jpg";
-				mBitmap = BitmapFactory.decodeFile(readPath);
-				processPhotos(mBitmap);
+//				//读取指定文件夹下固定图片并直接进行处理
+//				readPath = "/mnt/sdcard/MyTagApp/1.jpg";
+//				mBitmap = BitmapFactory.decodeFile(readPath);
+//				processPhotos(mBitmap);
+				Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+		    	intent.setType("image/*");
+		    	startActivityForResult(intent, SELECT_FILE);
 				 return true;
 			case menu_help:
 				Toast.makeText(this, "help~", Toast.LENGTH_SHORT).show();
 				 return true;
 		}
 			 return super.onOptionsItemSelected(item);
+	}
+
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		// TODO Auto-generated method stub
+		super.onActivityResult(requestCode, resultCode, data);
+		switch (requestCode) {
+		case SELECT_FILE: {
+			Uri imageUri = data.getData();
+
+			String[] projection = { MediaStore.Images.Media.DATA };
+			Cursor cur = managedQuery(imageUri, projection, null, null, null);
+			cur.moveToFirst();
+			jpegName = cur.getString(cur.getColumnIndex(MediaStore.Images.Media.DATA));
+			}
+			break;
+		}
+		//Remove output file
+				deleteFile(resultUrl);
+				mBitmap = BitmapFactory.decodeFile(jpegName);
+				processPhotos(mBitmap);
+		        Intent results = new Intent( this, ResultsActivity.class);
+		    	results.putExtra("IMAGE_PATH", jpegName);
+		    	results.putExtra("RESULT_PATH", resultUrl);
+		    	startActivity(results);
 	}
 
 
@@ -570,6 +601,7 @@ public class CameraActivity extends Activity implements
 //        	 Imgproc.Canny(otsuMat, edgesMat, 50, 150);
 //        	 Utils.matToBitmap(edgesMat, edgesBitmap);
 //        	 Imgproc.HoughLines(edgesMat, linesMat, 1, Math.PI/360, mBitmapWidth/5);
+        	
         	 results = new Intent(this, ResultsActivity.class);
         	 results.putExtra("IMAGE_PATH", jpegName);
         	 results.putExtra("RESULT_PATH", resultUrl);
