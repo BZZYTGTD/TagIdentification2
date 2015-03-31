@@ -1,18 +1,26 @@
 package com.example.tagidentification;
 
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.List;
 
 import org.apache.http.util.EncodingUtils;
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
+import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfDouble;
+import org.opencv.core.Point;
 import org.opencv.imgproc.Imgproc;
 
 import android.annotation.SuppressLint;
@@ -58,7 +66,6 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.Toast;
-
 public class CameraActivity extends Activity implements 
 	Callback, OnClickListener, AutoFocusCallback
 //	,MediaScannerConnectionClient
@@ -217,7 +224,7 @@ public class CameraActivity extends Activity implements
 		switch(item.getItemId()){
 			case menu_add:
 //				//读取指定文件夹下固定图片并直接进行处理
-				readPath = "/mnt/sdcard/MyTagApp/1.jpg";
+				readPath = "/mnt/sdcard/MyTagApp/4.jpg";
 				mBitmap = BitmapFactory.decodeFile(readPath);
 				processPhotos(mBitmap);
 //				Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
@@ -548,8 +555,12 @@ public class CameraActivity extends Activity implements
 		private static Uri uri;
 		private Bitmap mBitmap;
 		private Bitmap grayBitmap;
+		private Bitmap newotsuBitmap;
 		private Bitmap otsuBitmap;
 		private Bitmap edgesBitmap;
+		private Bitmap linesBitmap;
+		private Bitmap imageCorrectGrayBitmap;
+		private Bitmap imageOTUSSBitmap;
 		private int mBitmapWidth;
 		private int mBitmapHeight;
 		private String imagePath;
@@ -585,6 +596,7 @@ public class CameraActivity extends Activity implements
              Mat otsuMat = new Mat();
              Mat edgesMat = new Mat();
              Mat linesMat = new Mat();
+             
              mBitmapWidth = mBitmap.getWidth();
         	 mBitmapHeight = mBitmap.getHeight();
         	 //显示初始图片（在预览位置上）
@@ -597,28 +609,105 @@ public class CameraActivity extends Activity implements
         	        Utils.matToBitmap(grayMat, grayBitmap); //convert mat to bitmap  
         	 //显示灰度图像
 //        	 mDrawIV.setImageBitmap(grayBitmap);
-        	        
+//        	        savePhotos(grayBitmap);   
         	 //灰度图像大津法二值化
         	 otsuBitmap = Bitmap.createBitmap(grayBitmap);  
         	 Imgproc.threshold(grayMat, otsuMat, 0, 255, Imgproc.THRESH_BINARY|Imgproc.THRESH_OTSU);
         	 Utils.matToBitmap(otsuMat, otsuBitmap);
-        	 //显示大津法二值化图像
-        	 
-        	 mDrawIV.setImageBitmap(otsuBitmap);
+//        	 //显示大津法二值化图像
+//        	 
+//        	 mDrawIV.setImageBitmap(otsuBitmap);
         	 savePhotos(otsuBitmap);
         	 
         	 //Hough变换矫正图像
-//        	 edgesBitmap = Bitmap.createBitmap(otsuBitmap);
-//        	 Imgproc.Canny(otsuMat, edgesMat, 50, 150);
-//        	 Utils.matToBitmap(edgesMat, edgesBitmap);
-//        	 Imgproc.HoughLines(edgesMat, linesMat, 1, Math.PI/360, mBitmapWidth/5);
-        	
+        	 edgesBitmap = Bitmap.createBitmap(otsuBitmap);
+        	 Imgproc.Canny(otsuMat, edgesMat, 50, 150);
+        	 Utils.matToBitmap(edgesMat, edgesBitmap);
+        	 Imgproc.HoughLines(edgesMat, linesMat, 1, Math.PI/360, mBitmapWidth/5);
+        	 double[] lines = linesMat.get(0, 0);
+        	 double rho = lines[0];
+        	 double theta = lines[1];
+        	 float thetabSum = 0;
+             float thetabNum = 0;
+             thetabSum += (theta-Math.PI/2);
+             thetabNum += 1;
+             
+//             //特殊大津法
+//             imageCorrectGrayBitmap = rotateBitmap(grayBitmap,(float)(thetabSum/thetabNum*180/Math.PI));
+////             imageCorrectGrayBitmap = rotateBitmap(grayBitmap,(float)(Math.PI/2));
+//             imageOTUSSBitmap = imageCorrectGrayBitmap;
+//        	
+////             mDrawIV.setImageBitmap(imageOTUSSBitmap);
+////             savePhotos(imageOTUSSBitmap);
+//             Utils.bitmapToMat(imageOTUSSBitmap, OTUSSMat);
+             
+             double rowStep = 10.0;
+            
+             org.opencv.core.Size size;
+             size =  grayMat.size();
+             System.out.println("size :"+size+"size.height:"+size.height);//c*r 221*124
+              double sLength = size.height/15;
+              int i;
+              for(i = 1; i <= 15; i++){
+	            	  Imgproc.threshold(grayMat.rowRange((int)(sLength*(i-1)), (int)(sLength*i)), grayMat.rowRange((int)(sLength*(i-1)), (int)(sLength*i)), 0, 255, Imgproc.THRESH_BINARY|Imgproc.THRESH_OTSU);
+            	  }
+             
+              //显示特殊大津法
+              newotsuBitmap = Bitmap.createBitmap(grayBitmap);
+              Utils.matToBitmap(grayMat, newotsuBitmap);
+              mDrawIV.setImageBitmap(newotsuBitmap);
+              savePhotos(newotsuBitmap);
+               
+             
         	 results = new Intent(this, ResultsActivity.class);
         	 results.putExtra("IMAGE_PATH", jpegName);
         	 results.putExtra("RESULT_PATH", resultUrl);
         	 startActivity(results);
 			
 		}
+		
+		
+		public  Bitmap rotateBitmap(Bitmap bitmap, float angle) {
+			System.out.println("angle :"+ angle);
+            Matrix matrix = new Matrix();
+//            jangle = (float)(angle / Math.PI  * 180);
+//            System.out.println("jangle :"+ jangle);
+            double w = bitmap.getWidth();
+            double h = bitmap.getHeight();
+            double rangle = Math.toRadians(angle);//角度转换成弧度
+           
+			double nw = (Math.abs(Math.sin(rangle)*h) + Math.abs(Math.cos(rangle)*w));
+			double nh = (Math.abs(Math.cos(rangle)*h) + Math.abs(Math.sin(rangle)*w));
+			double x = (nw-w)*0.5;//确定原点坐标  
+		    double y = (nh-h)*0.5;  
+            matrix.postRotate(angle, (float) nw / 2, (float) nh / 2);
+            matrix.postTranslate((float)x, (float) y);
+            Bitmap newBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),
+                            bitmap.getHeight(), matrix, true);
+            return newBitmap;
+    }
+//		public double rotate_about_center(Bitmap bitmap,double angle,double scale){
+//			Mat bitmapMat = new Mat(); 
+//			Bitmap rotatedBitmap;
+//			double w = bitmap.getWidth();
+//			double h = bitmap.getHeight();
+//			double rangle = Math.toRadians(angle);//角度转换成弧度
+//			double nw = (Math.abs(Math.sin(rangle)*h) + Math.abs(Math.cos(rangle)*w))*scale;
+//			double nh = (Math.abs(Math.cos(rangle)*h) + Math.abs(Math.sin(rangle)*w))*scale;
+//			double x = (nw-w)*0.5;//确定原点坐标  
+//		    double y = (nh-h)*0.5;  
+//			Point center = new Point((nw*0.5), (nh*0.5));
+//			Mat rot_mat = Imgproc.getRotationMatrix2D(center, angle, scale);
+////			double array[] = new double[]{x,y,0};
+//			MatOfDouble A = new MatOfDouble();
+//
+//			A.fromArray(x,y,0);
+//			 rot_mat.dot(A);
+//			
+//			//Ceiling是向上取整  
+//			return Imgproc.warpAffine(bitmapMat, rot_mat, M, Imgproc.INTER_LANCZOS4);;
+//			
+//		}
 		
 		@Override
 		public void surfaceChanged(SurfaceHolder holder, int format, int width,
