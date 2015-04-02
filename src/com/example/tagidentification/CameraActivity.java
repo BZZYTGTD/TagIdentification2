@@ -112,7 +112,8 @@ public class CameraActivity extends Activity implements
 	
 	private final int menu_add = 101;
     private final int menu_help = 103;
-	
+//	private native int processFileNative();
+
 	
 	
 	@SuppressWarnings("deprecation")
@@ -565,6 +566,7 @@ public class CameraActivity extends Activity implements
 		private int mBitmapHeight;
 		private String imagePath;
 		private String resultUrl = "result.txt";
+//		private String resultUrl = "mnt/sdcard/28ChinesePRC+English.txt";
 		private Intent results;
 		private boolean process = false;
 		
@@ -617,7 +619,7 @@ public class CameraActivity extends Activity implements
 //        	 //显示大津法二值化图像
 //        	 
 //        	 mDrawIV.setImageBitmap(otsuBitmap);
-        	 savePhotos(otsuBitmap);
+//        	 savePhotos(otsuBitmap);
         	 
         	 //Hough变换矫正图像
         	 edgesBitmap = Bitmap.createBitmap(otsuBitmap);
