@@ -98,72 +98,72 @@ int processFile() {
 	char i = 0; //循环变量
 	char d = 0; //用于报错调用lev_distance后得到的距离值，防止重复计算
 	char energyFlag = FALSE; //是否为能量的标志位
-	printf("hahah");
 
-//    fFromContent = fopen("willdo.txt","rw"); //读写方式打开文件fromContentV1.txt
-//
-//	//逐行读取fFromContent所指向文件中的内容
-//	while (fgets(line, lineNum, fFromContent) != NULL)
-//	{
-//		//printf("%s", line);
-//
-//		//将line中空格隔开的内容，分别存入content指针数组中
-//		contentTemp = strtok(line, " ");
-//		if(contentTemp)
-//			content[0] = contentTemp;
-//
-//		for (i = 1; i < oneLineNum; i++){
-//			contentTemp = strtok(NULL, " ");
-//			if(contentTemp)
-//				content[i] = contentTemp;
-//		}
-//
-//		//printf("%s %s\n", content[0], content[1]);
-//		//system("pause");
-//
-//		//在fromContent中找到与content[0]最相似的
-//		distance = strlen(content[0]);
-//
-//		for (i = startContentNum; i < contentNum; i++){
-//
-//			//lev_distance == 0时，找到一样的
-//			if ((d = lev_distance(content[0], fromContent[i].elementsName)) == 0){
-//				correctContentNum = i;
-//				startContentNum = i + 1; //检测两个字符串一样时，将循环起始从下一行开始，不再检测之前的
-//				//到最后一个时，判断是否为 “能量”，
-//				if (correctContentNum == 0)
-//					energyFlag = TRUE;
-//				break; //若检查到完全一样的立即推出循环
-//			}
-//			//否则找到lev_distance值最小的，作为一致的
-//			else {
-//				//将距离最小的记录下来
-//				if (distance > d){
-//					distance = d;
-//					correctContentNum = i;
-//				}
-//				//到最后一个时，判断是否为 “能量”，
-//				if ((correctContentNum != -1) && (i == (contentNum-1))){
-//					if (correctContentNum == 0)
-//						energyFlag = TRUE;
-//				}
-//			}
-//		}
-//
-//		//从能量开始输出
-//		if ((correctContentNum != -1) && (energyFlag == TRUE)){
-//
-//			printf("%s->%s,distance = %d\n", content[0], fromContent[correctContentNum].elementsName, distance);
-//			printf("%.2f\n", getContent(content[1]));
-//
-//			fromContent[correctContentNum].content = getContent(content[1]);
-//		}
-//
-//
-//    }
+
+    fFromContent = fopen("mnt/sdcard/willdo.txt","r"); //读写方式打开文件fromContentV1.txt
+
+	//逐行读取fFromContent所指向文件中的内容
+	while (fgets(line, lineNum, fFromContent) != NULL)
+	{
+		//printf("%s", line);
+
+		//将line中空格隔开的内容，分别存入content指针数组中
+		contentTemp = strtok(line, " ");
+		if(contentTemp)
+			content[0] = contentTemp;
+
+		for (i = 1; i < oneLineNum; i++){
+			contentTemp = strtok(NULL, " ");
+			if(contentTemp)
+				content[i] = contentTemp;
+		}
+
+		//printf("%s %s\n", content[0], content[1]);
+		//system("pause");
+
+		//在fromContent中找到与content[0]最相似的
+		distance = strlen(content[0]);
+
+		for (i = startContentNum; i < contentNum; i++){
+
+			//lev_distance == 0时，找到一样的
+			if ((d = lev_distance(content[0], fromContent[i].elementsName)) == 0){
+				correctContentNum = i;
+				startContentNum = i + 1; //检测两个字符串一样时，将循环起始从下一行开始，不再检测之前的
+				//到最后一个时，判断是否为 “能量”，
+				if (correctContentNum == 0)
+					energyFlag = TRUE;
+				break; //若检查到完全一样的立即推出循环
+			}
+			//否则找到lev_distance值最小的，作为一致的
+			else {
+				//将距离最小的记录下来
+				if (distance > d){
+					distance = d;
+					correctContentNum = i;
+				}
+				//到最后一个时，判断是否为 “能量”，
+				if ((correctContentNum != -1) && (i == (contentNum-1))){
+					if (correctContentNum == 0)
+						energyFlag = TRUE;
+				}
+			}
+		}
+
+		//从能量开始输出
+		if ((correctContentNum != -1) && (energyFlag == TRUE)){
+
+			printf("%s->%s,distance = %d\n", content[0], fromContent[correctContentNum].elementsName, distance);
+			printf("%.2f\n", getContent(content[1]));
+
+			fromContent[correctContentNum].content = getContent(content[1]);
+		}
+
+
+    }
 //	fclose(fFromContent);
-//
-//	printfFromContent();
+
+	printfFromContent();
 
 	return 0;
 }
@@ -212,14 +212,14 @@ void printfFromContent(void)
 {
 	char i = 0;
 	FILE *fDone; //定义文件流指针，用于打开读取的文件
-	fDone = fopen("Done.txt","rw"); //只读方式打开文件fromContentV1.txt
+	fDone = fopen("mnt/sdcard/Done.txt","w"); //只读方式打开文件fromContentV1.txt
 
 
 	for ( ; i < contentNum; i++){
 		//printf("%s: %.2f%s(%s)\n", fromContent[i].elementsName, fromContent[i].content, fromContent[i].chineseUnit, fromContent[i].englishUnit);
 		fprintf(fDone, "%s: %.2f%s(%s)\n", fromContent[i].elementsName, fromContent[i].content, fromContent[i].chineseUnit, fromContent[i].englishUnit);
 	}
-	fclose(fDone);
+//	fclose(fDone);
 }
 
 
