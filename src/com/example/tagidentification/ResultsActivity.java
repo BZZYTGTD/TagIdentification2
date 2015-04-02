@@ -36,13 +36,15 @@ public class ResultsActivity extends Activity {
 		String imageUrl = "unknown";
 		
 		Bundle extras = getIntent().getExtras();
-		if( extras != null) {
-			imageUrl = extras.getString("IMAGE_PATH" );
-			outputPath = extras.getString( "RESULT_PATH" );
-		}
+//		if( extras != null) {
+//			imageUrl = extras.getString("IMAGE_PATH" );
+//			outputPath = extras.getString( "RESULT_PATH" );
+//		}
 		
 		// Starting recognition process
-		new AsyncProcessTask(this).execute(imageUrl, outputPath);
+//		new AsyncProcessTask(this).execute(imageUrl, outputPath);
+		processFileNative();
+		System.out.println("jni start");
 //		InputStream fis = getResources().openRawResource(R.raw.willdo);  
 //		
 //		Reader reader;

@@ -14,7 +14,7 @@
 #define FALSE 0
 
 
-
+int processFile();
 JNIEXPORT jint JNICALL Java_com_example_tagidentification_ResultsActivity_processFileNative
   (JNIEnv *, jobject){
 	processFile();
