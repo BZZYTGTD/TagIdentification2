@@ -100,7 +100,8 @@ int processFile() {
 	char energyFlag = FALSE; //是否为能量的标志位
 
 
-    fFromContent = fopen("mnt/sdcard/willdo.txt","r"); //读写方式打开文件fromContentV1.txt
+//    fFromContent = fopen("mnt/sdcard/willdo.txt","r"); //读写方式打开文件fromContentV1.txt
+    fFromContent = fopen("/data/data/com.example.tagidentification/files/result.txt","r");
 
 	//逐行读取fFromContent所指向文件中的内容
 	while (fgets(line, lineNum, fFromContent) != NULL)
@@ -161,7 +162,7 @@ int processFile() {
 
 
     }
-//	fclose(fFromContent);
+	fclose(fFromContent);
 
 	printfFromContent();
 
@@ -212,14 +213,14 @@ void printfFromContent(void)
 {
 	char i = 0;
 	FILE *fDone; //定义文件流指针，用于打开读取的文件
-	fDone = fopen("mnt/sdcard/Done.txt","w"); //只读方式打开文件fromContentV1.txt
-
+//	fDone = fopen("mnt/sdcard/Done.txt","w"); //只读方式打开文件fromContentV1.txt
+	fDone = fopen("/data/data/com.example.tagidentification/files/result.txt","w");
 
 	for ( ; i < contentNum; i++){
 		//printf("%s: %.2f%s(%s)\n", fromContent[i].elementsName, fromContent[i].content, fromContent[i].chineseUnit, fromContent[i].englishUnit);
 		fprintf(fDone, "%s: %.2f%s(%s)\n", fromContent[i].elementsName, fromContent[i].content, fromContent[i].chineseUnit, fromContent[i].englishUnit);
 	}
-//	fclose(fDone);
+	fclose(fDone);
 }
 
 

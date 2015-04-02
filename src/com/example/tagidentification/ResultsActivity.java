@@ -36,33 +36,15 @@ public class ResultsActivity extends Activity {
 		String imageUrl = "unknown";
 		
 		Bundle extras = getIntent().getExtras();
-//		if( extras != null) {
-//			imageUrl = extras.getString("IMAGE_PATH" );
-//			outputPath = extras.getString( "RESULT_PATH" );
-//		}
+		if( extras != null) {
+			imageUrl = extras.getString("IMAGE_PATH" );
+			outputPath = extras.getString( "RESULT_PATH" );
+		}
 		
 		// Starting recognition process
-//		new AsyncProcessTask(this).execute(imageUrl, outputPath);
-		processFileNative();
-		System.out.println("jni start");
-//		InputStream fis = getResources().openRawResource(R.raw.willdo);  
-//		
-//		Reader reader;
-//		try {
-//			reader = new InputStreamReader(fis, "gbk");
-//			BufferedReader bufReader = new BufferedReader(reader);
-//			String text = null;
-//			while ((text = bufReader.readLine()) != null) {
-//				System.out.println("text:"+text);
-//			}
-//			processFileNative();
-//		} catch (UnsupportedEncodingException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+		new AsyncProcessTask(this).execute(imageUrl, outputPath);
+
+		
 		
 		
 	}
@@ -71,14 +53,15 @@ public class ResultsActivity extends Activity {
 		if (!success)
 			return;
 		try {
+			processFileNative();
 			StringBuffer contents = new StringBuffer();
 
 			FileInputStream fis = openFileInput(outputPath);
 			
 			
 			try {
+//				Reader reader = new InputStreamReader(fis, "UTF-8");
 				Reader reader = new InputStreamReader(fis, "UTF-8");
-//				Reader reader = new InputStreamReader(fis, "gbk");
 				BufferedReader bufReader = new BufferedReader(reader);
 				String text = null;
 				while ((text = bufReader.readLine()) != null) {
@@ -86,7 +69,7 @@ public class ResultsActivity extends Activity {
 					System.out.println("contents.toString():"+ contents.toString());
 //					System.out.println("text:"+text);
 				}
-				processFileNative();
+				
 			} finally {
 				fis.close();
 			}

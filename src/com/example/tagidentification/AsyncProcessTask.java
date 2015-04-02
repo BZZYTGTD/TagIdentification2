@@ -1,5 +1,7 @@
 package com.example.tagidentification;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
 import com.abbyy.ocrsdk.*;
@@ -8,6 +10,7 @@ import android.app.*;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.os.Environment;
 
 public class AsyncProcessTask extends AsyncTask<String, String, Boolean> {
 
@@ -39,7 +42,16 @@ public class AsyncProcessTask extends AsyncTask<String, String, Boolean> {
 	protected Boolean doInBackground(String... args) {
 
 		String inputFile = args[0];
+//		File file = new File(Environment.getExternalStorageDirectory(),"result.txt");
+//		try {
+//			FileOutputStream fileOutputStream = new FileOutputStream(file);
+//		} catch (FileNotFoundException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		}
 		String outputFile = args[1];
+//		String outputFile = file;
+		System.out.println("outputFile :"+ outputFile);
 
 		try {
 			Client restClient = new Client();
@@ -98,6 +110,7 @@ public class AsyncProcessTask extends AsyncTask<String, String, Boolean> {
 			*/
 			Task task = restClient.processImage(inputFile, processingSettings);
 			
+			
 			while( task.isTaskActive() ) {
 				// Note: it's recommended that your application waits
 				// at least 2 seconds before making the first getTaskStatus request
@@ -114,7 +127,8 @@ public class AsyncProcessTask extends AsyncTask<String, String, Boolean> {
 			
 			if( task.Status == Task.TaskStatus.Completed ) {
 				publishProgress( "Downloading.." );
-				FileOutputStream fos = activity.openFileOutput(outputFile,Context.MODE_PRIVATE);
+				
+				FileOutputStream fos = activity.openFileOutput(outputFile,Context.MODE_WORLD_READABLE+Context.MODE_WORLD_WRITEABLE);
 				
 				try {
 					restClient.downloadResult(task, fos);
