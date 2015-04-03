@@ -24,8 +24,8 @@ import android.widget.ImageView;
 	        paint.setAntiAlias(true);  
 //	        paint.setColor(Color.BLUE);  
 	        paint.setStyle(Style.STROKE);  
-	        paint.setStrokeWidth(2.5f);//设置线宽  
-	        paint.setAlpha(0);  //设置矩形线是无色透明的
+	        paint.setStrokeWidth(2.5f);//绾垮
+	        paint.setAlpha(0);  //閫忔槑
 	    };  
 	      
 	    private CameraActivity mCameraActivity;
@@ -34,7 +34,7 @@ import android.widget.ImageView;
 	        // TODO Auto-generated method stub  
 	        super.onDraw(canvas);  
 	        System.out.println(" mCameraActivity.mScreenWidth:"+ mCameraActivity.mScreenWidth);
-			canvas.drawRect(new Rect(0, 0, mCameraActivity.mScreenWidth,mCameraActivity.mScreenWidth), paint);//绘制矩形为整个surfaceView  
+			canvas.drawRect(new Rect(0, 0, mCameraActivity.mScreenWidth,mCameraActivity.mScreenWidth), paint);//锟斤拷锟狡撅拷锟斤拷为锟斤拷锟絪urfaceView  
 //			canvas.drawRect(new Rect(330,440, 600,700), paint);
 	    }  
 	      

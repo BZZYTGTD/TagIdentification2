@@ -125,11 +125,11 @@ public class CameraActivity extends Activity implements
 		
 //		getActionBar().setTitle("haha");
         getActionBar().setDisplayHomeAsUpEnabled(true);
-		//ÉèÖÃÆÁÄ»·½ÏòÎªÊúÆÁ
+		//ç«–å±
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         
         
-		 // µÃµ½ÆÁÄ»µÄ´óĞ¡
+		 //è·å–å±å¹•å°ºå¯¸
         wManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
         display = wManager.getDefaultDisplay();
         mScreenHeight = display.getHeight();//1800
@@ -140,17 +140,17 @@ public class CameraActivity extends Activity implements
          
         linearrLayout01 = (LinearLayout)findViewById(R.id.linearLayout01);
          preview = (SurfaceView) findViewById(R.id.camera_preview);
-         /**ÓÃÀ´ÉèÖÃsurfaceviewµÄ´óĞ¡*/
+         //surfaceviewé¢„è§ˆå°ºå¯¸ï¼š1080*1080
          FrameLayout.LayoutParams layoutParams = 
         		 new FrameLayout.LayoutParams(mScreenWidth, mScreenWidth);
          preview.setLayoutParams(layoutParams);
          preview.setOnClickListener(this);
-         //»ñµÃ¾ä±ú  
+        
          mHolder = preview.getHolder(); 
-         //Ìí¼Ó»Øµ÷  
+          
          mHolder.addCallback(this); 
-//         mHolder.setFixedSize(1280, 720);// ÉèÖÃ·Ö±æÂÊ 
-         //ÉèÖÃÀàĞÍ  
+//         mHolder.setFixedSize(1280, 720);
+     
          mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);  
          mDrawIV = (com.example.tagidentification.DrawImageView)findViewById(R.id.drawIV);
          mDrawIV.onDraw(new Canvas());
@@ -163,7 +163,7 @@ public class CameraActivity extends Activity implements
         getPhotos = (Button)findViewById(R.id.button_getPhotos);
         captureButton.setOnClickListener(this);
         getPhotos.setOnClickListener(this);
-        // µÃµ½Ä¬ÈÏµÄÏà»úID
+        // è·å–ç›¸æœºID
         mDefaultCameraId = getDefaultCameraId();
         mCameraCurrentlyLocked = mDefaultCameraId;
 //        System.out.println("mCameraCurrentlyLocked "+mCameraCurrentlyLocked);
@@ -174,14 +174,14 @@ public class CameraActivity extends Activity implements
 //        msc.connect();
 	}
 
-	 //Ë«»÷ÍË³ö
+	 //è¿”å›æ–¹æ³•
 	@Override  
 	public boolean onKeyDown(int keyCode, KeyEvent event) {  
 	    if(event.getAction() == KeyEvent.ACTION_DOWN && KeyEvent.KEYCODE_BACK == keyCode) {    
 //	        long currentTime = System.currentTimeMillis();    
 //	        if((currentTime-touchTime)>=waitTime) {    
-//	          //  ToastµÄÏÔÊ¾Ê±¼äºÍµÈ´ıÊ±¼äÏàÍ¬  
-//	            Toast.makeText(this, "ÔÙ°´Ò»´ÎÍË³ö", (int)waitTime).show();    
+//	          //  Toastï¿½ï¿½ï¿½ï¿½Ê¾Ê±ï¿½ï¿½ÍµÈ´ï¿½Ê±ï¿½ï¿½ï¿½ï¿½Í¬  
+//	            Toast.makeText(this, "ï¿½Ù°ï¿½Ò»ï¿½ï¿½ï¿½Ë³ï¿½", (int)waitTime).show();    
 //	            touchTime = currentTime;    
 //	        }else { 
 //	        	mCamera.setPreviewCallback(null) ;
@@ -211,8 +211,8 @@ public class CameraActivity extends Activity implements
 	    getMenuInflater().inflate(R.menu.main, menu);
 //	    menu.findItem(R.id.menu_pictureFromFile).setVisible(true);
 //	    menu.findItem(R.id.menu_help).setVisible(true);
-	    menu.add(0, menu_add, 1, "Ìí¼ÓÍ¼¿âÕÕÆ¬");
-        menu.add(0, menu_help, 1, "°ïÖú");
+	    menu.add(0, menu_add, 1, "PictureFromFile");
+        menu.add(0, menu_help, 1, "Help");
 	    return true;
 	}
 
@@ -224,8 +224,8 @@ public class CameraActivity extends Activity implements
 		// TODO Auto-generated method stub
 		switch(item.getItemId()){
 			case menu_add:
-//				//¶ÁÈ¡Ö¸¶¨ÎÄ¼ş¼ĞÏÂ¹Ì¶¨Í¼Æ¬²¢Ö±½Ó½øĞĞ´¦Àí
-				readPath = "/mnt/sdcard/MyTagApp/1.jpg";
+//				//è¯»å–å›ºå®šè·¯å¾„ä¸‹å•å¼ å›¾ç‰‡
+				readPath = "/mnt/sdcard/MyTagApp/28.jpg";
 				mBitmap = BitmapFactory.decodeFile(readPath);
 				processPhotos(mBitmap);
 //				Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
@@ -266,7 +266,7 @@ public class CameraActivity extends Activity implements
 	}
 
 
-	//ÊµÏÖ½¹µã¿òµÄ»­Í¼,±¾³ÌĞòÎª×Ô¶¯»ñÈ¡½¹µã
+	//ç”»ç„¦ç‚¹æ¡†çŸ©å½¢
 	class DrawCaptureRect extends View
     {
 	     private int mcolorfill;
@@ -320,12 +320,11 @@ public class CameraActivity extends Activity implements
 	        {
 	            if (mNumberOfCameras > 0)
 	            {
-	                // Èç¹ûÃ»ÓĞºóÏòÉãÏñÍ·
+	                // ï¿½ï¿½ï¿½Ã»ï¿½Ğºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í·
 	                defaultId = 0;
 	            }
 	            else
 	            {
-	                // Ã»ÓĞÉãÏñÍ·
 	                Toast.makeText(getApplicationContext(), R.string.no_camera,
 	                        Toast.LENGTH_LONG).show();
 	            }
@@ -366,7 +365,7 @@ public class CameraActivity extends Activity implements
 	    public void onPictureTaken(byte[] data, Camera camera) {
 
 	        if(null != data){  
-	        	bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);//dataÊÇ×Ö½ÚÊı¾İ£¬½«Æä½âÎö³ÉÎ»Í¼  
+	        	bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);//dataï¿½ï¿½ï¿½Ö½ï¿½ï¿½ï¿½İ£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î»Í¼  
 	        	  System.out.println("bitmap.getWidth() + "+bitmap.getWidth()+"bitmap.getHeight():"+bitmap.getHeight());
 	        	mCamera.stopPreview();  
 //                isPreview = false;  
@@ -378,10 +377,10 @@ public class CameraActivity extends Activity implements
             		matrix, false);
           
             
-            //Ğı×ªºórotaBitmapÊÇ3264*2448.Ô¤ÀÀsurfaviewµÄ´óĞ¡ÊÇ1080¡Á1080 
-            //½«3264*2448Ëõ·Åµ½1080¡Á1080  
+            //åŸ3264*2448.surfaview1080ï¿½ï¿½1080 
+          
             Bitmap sizeBitmap = Bitmap.createScaledBitmap(rotaBitmap, bitmap.getHeight(), bitmap.getHeight(), true);  
-             rectBitmap = Bitmap.createBitmap(sizeBitmap, 0, 0, bitmap.getHeight(), bitmap.getHeight());//½ØÈ¡
+             rectBitmap = Bitmap.createBitmap(sizeBitmap, 0, 0, bitmap.getHeight(), bitmap.getHeight());//ï¿½ï¿½È¡
             
             System.out.println("rectBitmap.getWidth() :"+rectBitmap.getWidth() + "rectBitmap.getHeight() :" + rectBitmap.getHeight());
 	       
@@ -390,10 +389,10 @@ public class CameraActivity extends Activity implements
                 	 
 	         }
    		
-		    // ÅÄÕÕºóÖØĞÂ¿ªÊ¼Ô¤ÀÀ
+		    // é‡æ–°é¢„è§ˆ
 	        mCamera.stopPreview();
 	        mCamera.startPreview();
-	        bitmap.recycle();//»ØÊÕbitmap¿Õ¼ä
+	        bitmap.recycle();//å›æ”¶bitmap
 	    }
 
 	};
@@ -404,7 +403,7 @@ public class CameraActivity extends Activity implements
 	public void savePhotos(Bitmap bm){  
          savePath = "/mnt/sdcard/MyTagApp/";  
         File folder = new File(savePath);  
-        if(!folder.exists()) //Èç¹ûÎÄ¼ş¼Ğ²»´æÔÚÔò´´½¨  
+        if(!folder.exists()) 
         {  
             folder.mkdir();  
         }  
@@ -416,7 +415,7 @@ public class CameraActivity extends Activity implements
             FileOutputStream fout = new FileOutputStream(jpegName);  
             BufferedOutputStream bos = new BufferedOutputStream(fout);  
   
-            //          //Èç¹ûĞèÒª¸Ä±ä´óĞ¡(Ä¬ÈÏµÄÊÇ¿í960¡Á¸ß1280),Èç¸Ä³É¿í600¡Á¸ß800  
+            //          //ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½Ä±ï¿½ï¿½Ğ¡(Ä¬ï¿½Ïµï¿½ï¿½Ç¿ï¿½960ï¿½xï¿½1280),ï¿½ï¿½Ä³É¿ï¿½600ï¿½xï¿½800  
             //          Bitmap newBM = bm.createScaledBitmap(bm, 600, 800, false);  
   
             bm.compress(Bitmap.CompressFormat.JPEG, 100, bos);  
@@ -479,7 +478,7 @@ public class CameraActivity extends Activity implements
 //	    return mediaFile;
 //	}
 	
-	//Ô­À´APIÖĞÃ»ÓĞÖØĞ´Õâ¸ö·½·¨
+	//Ô­4APIï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½Ğ´ï¿½ï¿½ï¿½ï¿½
 	 @Override
 	    protected void onResume()
 	    {
@@ -493,7 +492,7 @@ public class CameraActivity extends Activity implements
 	        System.out.println("onResume sucess load OpenCV...");
 	    }
 	 
-	//OpenCV¿â¼ÓÔØ²¢³õÊ¼»¯³É¹¦ºóµÄ»Øµ÷º¯Êı  
+	//OpenCVï¿½ï¿½ï¿½ï¿½Ø²ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½É¹ï¿½ï¿½ï¿½Ä»Øµï¿½ï¿½ï¿½  
 	    private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {  
 	  
 	        @Override  
@@ -501,11 +500,11 @@ public class CameraActivity extends Activity implements
 	            // TODO Auto-generated method stub  
 	            switch (status){  
 	            case BaseLoaderCallback.SUCCESS:  
-	                System.out.println( "³É¹¦¼ÓÔØ");  
+	                System.out.println( "success");  
 	                break;  
 	            default:  
 	                super.onManagerConnected(status);  
-	                System.out.println( "¼ÓÔØÊ§°Ü");  
+	                System.out.println( "ï¿½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½");  
 	                break;  
 	            }  
 	              
@@ -544,11 +543,11 @@ public class CameraActivity extends Activity implements
                if(success)  
                {  
             	    params = camera.getParameters();
-                   params.setPictureFormat(PixelFormat.JPEG);//Í¼Æ¬¸ñÊ½
-//                   params.setPreviewSize(800, 480);//Í¼Æ¬´óĞ¡
+                   params.setPictureFormat(PixelFormat.JPEG);//Í¼Æ¬ï¿½ï¿½Ê½
+//                   params.setPreviewSize(800, 480);//Í¼Æ¬ï¿½ï¿½Ğ¡
                    params.setRotation(90);  
       		
-                   camera.setParameters(params);//½«²ÎÊıÉèÖÃµ½ÎÒµÄcamera
+                   camera.setParameters(params);//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ãµï¿½ï¿½Òµï¿½camera
                    camera.setDisplayOrientation(90);  
                }  
 		}
@@ -574,18 +573,18 @@ public class CameraActivity extends Activity implements
 		public void onClick(View v) {
 			// TODO Auto-generated method stub
 			 switch (v.getId()) {
-             case R.id.button_capture: //ÅÄÕÕ
-                     mCamera.autoFocus(this);//×Ô¶¯¶Ô½¹
+             case R.id.button_capture: //ï¿½ï¿½ï¿½ï¿½
+//                     mCamera.autoFocus(this);//è‡ªåŠ¨é¢„è§ˆ
                      mCamera.takePicture(null, null, mPicture);
                      Toast.makeText(getApplicationContext(), "Yes", Toast.LENGTH_SHORT).show();
                      
                      break;
              case R.id.camera_preview:
-            	 mCamera.autoFocus(this);//×Ô¶¯¶Ô½¹
+            	 mCamera.autoFocus(this);//è‡ªåŠ¨é¢„è§ˆ
             	 break;
-             case R.id.button_getPhotos://´Ó×Ô¶¨ÒåappÂ·¾¶»ñÈ¡ÕÕÆ¬
+             case R.id.button_getPhotos:
             	 mBitmap = readPhotos(rectBitmap);
-            	 processPhotos(mBitmap);//·µ»ØµÄÊÇ´ó½ò·¨µÄÍ¼Æ¬
+            	 processPhotos(mBitmap);
             	 break;
              default:
                 	  break;
@@ -601,27 +600,26 @@ public class CameraActivity extends Activity implements
              
              mBitmapWidth = mBitmap.getWidth();
         	 mBitmapHeight = mBitmap.getHeight();
-        	 //ÏÔÊ¾³õÊ¼Í¼Æ¬£¨ÔÚÔ¤ÀÀÎ»ÖÃÉÏ£©
+        	 //æ˜¾ç¤ºåŸå§‹å›¾ç‰‡
 //        	 mDrawIV.setImageBitmap(mBitmap);
         	 
-        	 //Ô­Ê¼Í¼Ïñ»Ò¶È»¯
+        	 //ç°åº¦åŒ–
         	 grayBitmap = Bitmap.createBitmap(mBitmap.getWidth(), mBitmap.getHeight(), Config.RGB_565);  
         	 Utils.bitmapToMat(mBitmap, rgbMat);//convert original bitmap to Mat, R G B.  
         	 Imgproc.cvtColor(rgbMat, grayMat, Imgproc.COLOR_RGB2GRAY);//rgbMat to gray grayMat  
         	        Utils.matToBitmap(grayMat, grayBitmap); //convert mat to bitmap  
-        	 //ÏÔÊ¾»Ò¶ÈÍ¼Ïñ
+        	 //æ˜¾ç¤ºç°åº¦å›¾
 //        	 mDrawIV.setImageBitmap(grayBitmap);
 //        	        savePhotos(grayBitmap);   
-        	 //»Ò¶ÈÍ¼Ïñ´ó½ò·¨¶şÖµ»¯
+        	 //æ•´ä½“å¤§æ´¥æ³•
         	 otsuBitmap = Bitmap.createBitmap(grayBitmap);  
         	 Imgproc.threshold(grayMat, otsuMat, 0, 255, Imgproc.THRESH_BINARY|Imgproc.THRESH_OTSU);
         	 Utils.matToBitmap(otsuMat, otsuBitmap);
-//        	 //ÏÔÊ¾´ó½ò·¨¶şÖµ»¯Í¼Ïñ
 //        	 
 //        	 mDrawIV.setImageBitmap(otsuBitmap);
 //        	 savePhotos(otsuBitmap);
         	 
-        	 //Hough±ä»»½ÃÕıÍ¼Ïñ
+        	 //Houghå˜åŒ–
         	 edgesBitmap = Bitmap.createBitmap(otsuBitmap);
         	 Imgproc.Canny(otsuMat, edgesMat, 50, 150);
         	 Utils.matToBitmap(edgesMat, edgesBitmap);
@@ -634,7 +632,7 @@ public class CameraActivity extends Activity implements
              thetabSum += (theta-Math.PI/2);
              thetabNum += 1;
              
-//             //ÌØÊâ´ó½ò·¨
+//             //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 //             imageCorrectGrayBitmap = rotateBitmap(grayBitmap,(float)(thetabSum/thetabNum*180/Math.PI));
 ////             imageCorrectGrayBitmap = rotateBitmap(grayBitmap,(float)(Math.PI/2));
 //             imageOTUSSBitmap = imageCorrectGrayBitmap;
@@ -654,10 +652,10 @@ public class CameraActivity extends Activity implements
 	            	  Imgproc.threshold(grayMat.rowRange((int)(sLength*(i-1)), (int)(sLength*i)), grayMat.rowRange((int)(sLength*(i-1)), (int)(sLength*i)), 0, 255, Imgproc.THRESH_BINARY|Imgproc.THRESH_OTSU);
             	  }
              
-              //ÏÔÊ¾ÌØÊâ´ó½ò·¨
+              //ç‰¹æ®Šå¤§æ´¥æ³•
               newotsuBitmap = Bitmap.createBitmap(grayBitmap);
               Utils.matToBitmap(grayMat, newotsuBitmap);
-//              mDrawIV.setImageBitmap(newotsuBitmap);
+              mDrawIV.setImageBitmap(newotsuBitmap);
               savePhotos(newotsuBitmap);
                
              
@@ -676,11 +674,11 @@ public class CameraActivity extends Activity implements
 //            System.out.println("jangle :"+ jangle);
             double w = bitmap.getWidth();
             double h = bitmap.getHeight();
-            double rangle = Math.toRadians(angle);//½Ç¶È×ª»»³É»¡¶È
+            double rangle = Math.toRadians(angle);//ï¿½Ç¶ï¿½×ªï¿½ï¿½ï¿½É»ï¿½ï¿½ï¿½
            
 			double nw = (Math.abs(Math.sin(rangle)*h) + Math.abs(Math.cos(rangle)*w));
 			double nh = (Math.abs(Math.cos(rangle)*h) + Math.abs(Math.sin(rangle)*w));
-			double x = (nw-w)*0.5;//È·¶¨Ô­µã×ø±ê  
+			double x = (nw-w)*0.5;//È·ï¿½ï¿½Ô­ï¿½ï¿½ï¿½ï¿½ï¿½  
 		    double y = (nh-h)*0.5;  
             matrix.postRotate(angle, (float) nw / 2, (float) nh / 2);
             matrix.postTranslate((float)x, (float) y);
@@ -693,10 +691,10 @@ public class CameraActivity extends Activity implements
 //			Bitmap rotatedBitmap;
 //			double w = bitmap.getWidth();
 //			double h = bitmap.getHeight();
-//			double rangle = Math.toRadians(angle);//½Ç¶È×ª»»³É»¡¶È
+//			double rangle = Math.toRadians(angle);//ï¿½Ç¶ï¿½×ªï¿½ï¿½ï¿½É»ï¿½ï¿½ï¿½
 //			double nw = (Math.abs(Math.sin(rangle)*h) + Math.abs(Math.cos(rangle)*w))*scale;
 //			double nh = (Math.abs(Math.cos(rangle)*h) + Math.abs(Math.sin(rangle)*w))*scale;
-//			double x = (nw-w)*0.5;//È·¶¨Ô­µã×ø±ê  
+//			double x = (nw-w)*0.5;//È·ï¿½ï¿½Ô­ï¿½ï¿½ï¿½ï¿½ï¿½  
 //		    double y = (nh-h)*0.5;  
 //			Point center = new Point((nw*0.5), (nh*0.5));
 //			Mat rot_mat = Imgproc.getRotationMatrix2D(center, angle, scale);
@@ -706,7 +704,7 @@ public class CameraActivity extends Activity implements
 //			A.fromArray(x,y,0);
 //			 rot_mat.dot(A);
 //			
-//			//CeilingÊÇÏòÉÏÈ¡Õû  
+//			//Ceilingï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¡ï¿½ï¿½  
 //			return Imgproc.warpAffine(bitmapMat, rot_mat, M, Imgproc.INTER_LANCZOS4);;
 //			
 //		}
@@ -736,7 +734,7 @@ public class CameraActivity extends Activity implements
 // 	          params.setPictureSize(800, 600); 
 //			 params.setPictureSize(2592, 1936); 
  	           
-			 params.setJpegQuality(100);// ÉèÖÃÕÕÆ¬µÄÖÊÁ¿
+			 params.setJpegQuality(100);// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ¬ï¿½ï¿½ï¿½ï¿½
 			 params.setRotation(90);  
 			 mCamera.setParameters(params);
 			 mCamera.setDisplayOrientation(90);
@@ -763,7 +761,7 @@ public class CameraActivity extends Activity implements
 		public void surfaceCreated(SurfaceHolder holder) {
 			System.out.println("surfaceCreated");
 	        // The Surface has been created, now tell the camera where to draw the preview.
-			 //¿ªÆôÏà»ú  
+			 //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  
             if(mCamera == null)  
             {  
                  mCamera = Camera.open(); 
@@ -771,7 +769,7 @@ public class CameraActivity extends Activity implements
        	         params.setPictureFormat(PixelFormat.JPEG);  
 				 
 //       	         params.setPictureSize(800, 600);   
-				 params.setJpegQuality(100);// ÉèÖÃÕÕÆ¬µÄÖÊÁ¿
+				 params.setJpegQuality(100);// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ¬ï¿½ï¿½ï¿½ï¿½
 				 params.setRotation(90);  
 				 mCamera.setParameters(params);
 				 mCamera.setDisplayOrientation(90);
@@ -791,25 +789,6 @@ public class CameraActivity extends Activity implements
 			// TODO Auto-generated method stub
 			
 		}
-//		MediaScannerConnection msc;
-//		@Override
-//		public void onMediaScannerConnected() {
-//		    try {
-//                Log.e(TAG, "Start scan!");
-//                msc.scanFile(savePath, "image/*");
-//		    } catch (Exception e) {
-//                // TODO: handle exception
-//                e.printStackTrace();
-//		    }
-//			
-//		}
-//
-//		@Override
-//		public void onScanCompleted(String path, Uri uri) {
-//			msc.disconnect();
-//            Log.e(TAG, "Scan finished!");
-//			
-//		}
-	   
+
 
 }

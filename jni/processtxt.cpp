@@ -7,9 +7,9 @@
 #include<ctype.h>
 
 
-#define contentNum 48 //ËùÓĞÄÚÈİµÄ¸öÊı
-#define lineNum 50    //±í¸ñµÄĞĞÊı
-#define oneLineNum 3  //Ã¿ĞĞ¶ÁÈ¡ÄÚÈİµÄ¸öÊı
+#define contentNum 48 //æ‰€æœ‰å†…å®¹çš„ä¸ªæ•°
+#define lineNum 50    //è¡¨æ ¼çš„è¡Œæ•°
+#define oneLineNum 3  //æ¯è¡Œè¯»å–å†…å®¹çš„ä¸ªæ•°
 #define TRUE 1
 #define FALSE 0
 
@@ -23,63 +23,63 @@ JNIEXPORT jint JNICALL Java_com_example_tagidentification_ResultsActivity_proces
 
 
 
-/*-----------±äÁ¿¶¨Òå---------------*/
-//ÓªÑø³É·Ö±í½á¹¹Ìå
+/*-----------ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½---------------*/
+//Óªï¿½ï¿½É·Ö±ï¿½á¹¹ï¿½ï¿½
 struct fromContent{
-    char *elementsName; //ÏîÄ¿
-    char *chineseUnit;  //ÖĞÎÄµ¥Î»
-    char *englishUnit;  //Ó¢ÎÄµ¥Î»
-    float precision;    //¾«¶È
-	float content;      //Ã¿100g»òÕß100mlµÄº¬Á¿
+    char *elementsName; //é¡¹ç›®
+    char *chineseUnit;  //ä¸­æ–‡å•ä½
+    char *englishUnit;  //è‹±æ–‡å•ä½
+    float precision;    //ç²¾åº¦
+	float content;      //æ¯100gæˆ–è€…100mlçš„å«é‡
 }fromContent[contentNum] ={
-	"ÄÜÁ¿", "Ç§½¹", "kJ", 1.00, 0.00,
-	"µ°°×ÖÊ", "¿Ë", "g", 0.10, 0.00,
-	"Ö¬·¾", "¿Ë", "g", 0.10, 0.00,
-	"±¥ºÍÖ¬·¾", "¿Ë", "g", 0.10, 0.00,
-	"±¥ºÍÖ¬·¾Ëá", "¿Ë", "g", 0.10, 0.00,
-	"·´Ê½Ö¬·¾", "¿Ë", "g", 0.10, 0.00,
-	"·´Ê½Ö¬·¾Ëá", "¿Ë", "g", 0.10, 0.00,
-	"µ¥²»±¥ºÍÖ¬·¾", "¿Ë", "g", 0.10, 0.00,
-	"µ¥²»±¥ºÍÖ¬·¾Ëá", "¿Ë", "g", 0.10, 0.00,
-	"¶à²»±¥ºÍÖ¬·¾", "¿Ë", "g", 0.10, 0.00,
-	"¶à²»±¥ºÍÖ¬·¾Ëá", "¿Ë", "g", 0.10, 0.00,
-	"µ¨¹Ì´¼", "ºÁ¿Ë", "mg", 1.00, 0.00,
-	"Ì¼Ë®»¯ºÏÎï", "¿Ë", "g", 0.10, 0.00,
-	"ÌÇ", "¿Ë", "g", 0.10, 0.00,
-	"ÈéÌÇc", "¿Ë", "g", 0.10, 0.00,
-	"ÉÅÊ³ÏËÎ¬", "¿Ë", "g", 0.10, 0.00,
-	"µ¥Ìå³É·Ö", "¿Ë", "g", 0.10, 0.00,
-	"¿ÉÈÜĞÔÉÅÊ³ÏËÎ¬", "¿Ë", "g", 0.10, 0.00,
-	"²»¿ÉÈÜĞÔÉÅÊ³ÏËÎ¬", "¿Ë", "g", 0.10, 0.00,
-	"ÄÆ", "ºÁ¿Ë", "mg", 1.00, 0.00,
-	"Î¬ÉúËØA", "Î¢¿ËÊÓ»Æ´¼µ±Á¿", "¦ÌgRE", 1.00, 0.00,
-	"Î¬ÉúËØD", "Î¢¿Ë", "¦Ìg", 0.10, 0.00,
-	"Î¬ÉúËØE", "ºÁ¿Ë¦Á-ÉúÓı·Óµ±Á¿", "mg¦Á-TE", 0.01, 0.00,
-	"Î¬ÉúËØK", "Î¢¿Ë", "¦Ìg", 0.10, 0.00,
-	"Î¬ÉúËØB2", "ºÁ¿Ë", "mg", 0.01, 0.00,
-	"ºË»ÆËØ", "ºÁ¿Ë", "mg", 0.01, 0.00,
-	"Î¬ÉúËØB6", "ºÁ¿Ë", "mg", 0.01, 0.00,
-	"Î¬ÉúËØB12", "Î¢¿Ë", "¦Ìg", 0.01, 0.00,
-	"Î¬ÉúËØC", "ºÁ¿Ë", "mg", 0.10, 0.00,
-	"¿¹»µÑªËá", "ºÁ¿Ë", "mg", 0.10, 0.00,
-	"ÑÌËá", "ºÁ¿Ë", "mg", 0.01, 0.00,
-	"ÑÌõ£°·", "ºÁ¿Ë", "mg", 0.01, 0.00,
-	"Ò¶Ëá", "Î¢¿Ë", "¦Ìg", 1.00, 0.00,
-	"Ò¶Ëá", "Î¢¿ËÒ¶Ëáµ±Á¿", "¦ÌgDFE", 1.00, 0.00,
-	"·ºËá", "ºÁ¿Ë", "mg", 0.01, 0.00,
-	"ÉúÎïËØ", "Î¢¿Ë", "¦Ìg", 0.10, 0.00,
-	"µ¨¼î", "ºÁ¿Ë", "mg", 0.10, 0.00,
-	"Á×", "ºÁ¿Ë", "mg", 1.00, 0.00,
-	"¼Ø", "ºÁ¿Ë", "mg", 1.00, 0.00,
-	"Ã¾", "ºÁ¿Ë", "mg", 1.00, 0.00,
-	"¸Æ", "ºÁ¿Ë", "mg", 1.00, 0.00,
-	"Ìú", "ºÁ¿Ë", "mg", 0.10, 0.00,
-	"Ğ¿", "ºÁ¿Ë", "mg", 0.01, 0.00,
-	"µâ", "Î¢¿Ë", "¦Ìg", 0.10, 0.00,
-	"Îø", "Î¢¿Ë", "¦Ìg", 0.10, 0.00,
-	"Í­", "ºÁ¿Ë", "mg", 0.01, 0.00,
-	"·ú", "ºÁ¿Ë", "mg", 0.01, 0.00,
-	"ÃÌ", "ºÁ¿Ë", "mg", 0.01, 0.00
+		"èƒ½é‡", "åƒç„¦", "kJ", 1.00, 0.00,
+			"è›‹ç™½è´¨", "å…‹", "g", 0.10, 0.00,
+			"è„‚è‚ª", "å…‹", "g", 0.10, 0.00,
+			"é¥±å’Œè„‚è‚ª", "å…‹", "g", 0.10, 0.00,
+			"é¥±å’Œè„‚è‚ªé…¸", "å…‹", "g", 0.10, 0.00,
+			"åå¼è„‚è‚ª", "å…‹", "g", 0.10, 0.00,
+			"åå¼è„‚è‚ªé…¸", "å…‹", "g", 0.10, 0.00,
+			"å•ä¸é¥±å’Œè„‚è‚ª", "å…‹", "g", 0.10, 0.00,
+			"å•ä¸é¥±å’Œè„‚è‚ªé…¸", "å…‹", "g", 0.10, 0.00,
+			"å¤šä¸é¥±å’Œè„‚è‚ª", "å…‹", "g", 0.10, 0.00,
+			"å¤šä¸é¥±å’Œè„‚è‚ªé…¸", "å…‹", "g", 0.10, 0.00,
+			"èƒ†å›ºé†‡", "æ¯«å…‹", "mg", 1.00, 0.00,
+			"ç¢³æ°´åŒ–åˆç‰©", "å…‹", "g", 0.10, 0.00,
+			"ç³–", "å…‹", "g", 0.10, 0.00,
+			"ä¹³ç³–c", "å…‹", "g", 0.10, 0.00,
+			"è†³é£Ÿçº¤ç»´", "å…‹", "g", 0.10, 0.00,
+			"å•ä½“æˆåˆ†", "å…‹", "g", 0.10, 0.00,
+			"å¯æº¶æ€§è†³é£Ÿçº¤ç»´", "å…‹", "g", 0.10, 0.00,
+			"ä¸å¯æº¶æ€§è†³é£Ÿçº¤ç»´", "å…‹", "g", 0.10, 0.00,
+			"é’ ", "æ¯«å…‹", "mg", 1.00, 0.00,
+			"ç»´ç”Ÿç´ A", "å¾®å…‹è§†é»„é†‡å½“é‡", "Î¼gRE", 1.00, 0.00,
+			"ç»´ç”Ÿç´ D", "å¾®å…‹", "Î¼g", 0.10, 0.00,
+			"ç»´ç”Ÿç´ E", "æ¯«å…‹Î±-ç”Ÿè‚²é…šå½“é‡", "mgÎ±-TE", 0.01, 0.00,
+			"ç»´ç”Ÿç´ K", "å¾®å…‹", "Î¼g", 0.10, 0.00,
+			"ç»´ç”Ÿç´ B2", "æ¯«å…‹", "mg", 0.01, 0.00,
+			"æ ¸é»„ç´ ", "æ¯«å…‹", "mg", 0.01, 0.00,
+			"ç»´ç”Ÿç´ B6", "æ¯«å…‹", "mg", 0.01, 0.00,
+			"ç»´ç”Ÿç´ B12", "å¾®å…‹", "Î¼g", 0.01, 0.00,
+			"ç»´ç”Ÿç´ C", "æ¯«å…‹", "mg", 0.10, 0.00,
+			"æŠ—åè¡€é…¸", "æ¯«å…‹", "mg", 0.10, 0.00,
+			"çƒŸé…¸", "æ¯«å…‹", "mg", 0.01, 0.00,
+			"çƒŸé…°èƒº", "æ¯«å…‹", "mg", 0.01, 0.00,
+			"å¶é…¸", "å¾®å…‹", "Î¼g", 1.00, 0.00,
+			"å¶é…¸", "å¾®å…‹å¶é…¸å½“é‡", "Î¼gDFE", 1.00, 0.00,
+			"æ³›é…¸", "æ¯«å…‹", "mg", 0.01, 0.00,
+			"ç”Ÿç‰©ç´ ", "å¾®å…‹", "Î¼g", 0.10, 0.00,
+			"èƒ†ç¢±", "æ¯«å…‹", "mg", 0.10, 0.00,
+			"ç£·", "æ¯«å…‹", "mg", 1.00, 0.00,
+			"é’¾", "æ¯«å…‹", "mg", 1.00, 0.00,
+			"é•", "æ¯«å…‹", "mg", 1.00, 0.00,
+			"é’™", "æ¯«å…‹", "mg", 1.00, 0.00,
+			"é“", "æ¯«å…‹", "mg", 0.10, 0.00,
+			"é”Œ", "æ¯«å…‹", "mg", 0.01, 0.00,
+			"ç¢˜", "å¾®å…‹", "Î¼g", 0.10, 0.00,
+			"ç¡’", "å¾®å…‹", "Î¼g", 0.10, 0.00,
+			"é“œ", "æ¯«å…‹", "mg", 0.01, 0.00,
+			"æ°Ÿ", "æ¯«å…‹", "mg", 0.01, 0.00,
+			"é”°", "æ¯«å…‹", "mg", 0.01, 0.00
 };
 
 unsigned min(unsigned x,unsigned y,unsigned z );
@@ -87,33 +87,33 @@ unsigned lev_distance(const char *s,const char *t);
 float getContent(char *c);
 void printfFromContent(void);
 
-FILE *fDone; //¶¨ÒåÎÄ¼şÁ÷Ö¸Õë£¬ÓÃÓÚ´ò¿ª¶ÁÈ¡µÄÎÄ¼ş
+FILE *fDone; //ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½Ö¸ï¿½ë£¬ï¿½ï¿½ï¿½Ú´ò¿ª¶ï¿½È¡ï¿½ï¿½ï¿½Ä¼ï¿½
 
 int processFile() {
 
-	char line[lineNum]; //¶¨ÒåÒ»¸ö×Ö·û´®Êı×é£¬ÓÃÓÚ´æ´¢¶ÁÈ¡µÄ×Ö·û
-	FILE *fFromContent; //¶¨ÒåÎÄ¼şÁ÷Ö¸Õë£¬ÓÃÓÚ´ò¿ª¶ÁÈ¡µÄÎÄ¼ş
-	char *content[oneLineNum]; //¶¨ÒåÃ¿ĞĞÖĞµÄÄÚÈİ
-	char *contentTemp;         //ÓÃÓÚÁÙÊ±±£´æcontent[oneLineNum]·ÀÖ¹nullµÄ¶ÁÈë
-	unsigned int distance = 0; //Á½¸ö×Ö·û´®Ö®¼äµÄ¾àÀë
-	char correctContentNum = -1; //¾àÀë×îĞ¡µÄContentNum£¬¼´Óëcontent[0]×îÏàËÆµÄfromContent[i].elementsNameÖĞµÄi
-	char startContentNum = 0;    //Ã¿´ÎÑ­»·¿ªÊ¼µÄÖµ£¬¼ì²âµ½Ò»ÑùµÄºó£¬ÉÏÃæµÄ²»ÔÚ¼ì²â
+	char line[lineNum]; //å®šä¹‰ä¸€ä¸ªå­—ç¬¦ä¸²æ•°ç»„ï¼Œç”¨äºå­˜å‚¨è¯»å–çš„å­—ç¬¦
+	FILE *fFromContent; //å®šä¹‰æ–‡ä»¶æµæŒ‡é’ˆï¼Œç”¨äºæ‰“å¼€è¯»å–çš„æ–‡ä»¶
+	char *content[oneLineNum]; //å®šä¹‰æ¯è¡Œä¸­çš„å†…å®¹
+	char *contentTemp;         //ç”¨äºä¸´æ—¶ä¿å­˜content[oneLineNum]é˜²æ­¢nullçš„è¯»å…¥
+	unsigned int distance = 0; //ä¸¤ä¸ªå­—ç¬¦ä¸²ä¹‹é—´çš„è·ç¦»
+	char correctContentNum = -1; //è·ç¦»æœ€å°çš„ContentNumï¼Œå³ä¸content[0]æœ€ç›¸ä¼¼çš„fromContent[i].elementsNameä¸­çš„i
+	char startContentNum = 0;    //æ¯æ¬¡å¾ªç¯å¼€å§‹çš„å€¼ï¼Œæ£€æµ‹åˆ°ä¸€æ ·çš„åï¼Œä¸Šé¢çš„ä¸åœ¨æ£€æµ‹
 
-	char i = 0; //Ñ­»·±äÁ¿
-	char d = 0; //ÓÃÓÚ±¨´íµ÷ÓÃlev_distanceºóµÃµ½µÄ¾àÀëÖµ£¬·ÀÖ¹ÖØ¸´¼ÆËã
-	char energyFlag = FALSE; //ÊÇ·ñÎªÄÜÁ¿µÄ±êÖ¾Î»
+	char i = 0; //å¾ªç¯å˜é‡
+	char d = 0; //ç”¨äºæŠ¥é”™è°ƒç”¨lev_distanceåå¾—åˆ°çš„è·ç¦»å€¼ï¼Œé˜²æ­¢é‡å¤è®¡ç®—
+	char energyFlag = FALSE; //æ˜¯å¦ä¸ºèƒ½é‡çš„æ ‡å¿—ä½
 
 
-	fDone = fopen("/data/data/com.example.tagidentification/files/result2.txt","w"); //Ö»¶Á·½Ê½´ò¿ªÎÄ¼şfromContentV1.txt
-    fFromContent = fopen("/data/data/com.example.tagidentification/files/result.txt","r"); //Ö»¶Á·½Ê½´ò¿ªÎÄ¼şfromContentV1.txt
+	fDone = fopen("/data/data/com.example.tagidentification/files/result2.txt","w");
+    fFromContent = fopen("/data/data/com.example.tagidentification/files/result.txt","r");
 
-	//ÖğĞĞ¶ÁÈ¡fFromContentËùÖ¸ÏòÎÄ¼şÖĞµÄÄÚÈİ
+    //é€è¡Œè¯»å–fFromContentæ‰€æŒ‡å‘æ–‡ä»¶ä¸­çš„å†…å®¹
 	while (fgets(line,lineNum,fFromContent) != NULL)
 	{
-		fprintf(fDone, "aa%s", line);
+		//fprintf(fDone, "aa%s", line);
 		//printf("%s", line);
 
-		//½«lineÖĞ¿Õ¸ñ¸ô¿ªµÄÄÚÈİ£¬·Ö±ğ´æÈëcontentÖ¸ÕëÊı×éÖĞ
+		//å°†lineä¸­ç©ºæ ¼éš”å¼€çš„å†…å®¹ï¼Œåˆ†åˆ«å­˜å…¥contentæŒ‡é’ˆæ•°ç»„ä¸­
 		contentTemp = strtok(line, " ");
 		if(contentTemp)
 			content[0] = contentTemp;
@@ -122,39 +122,39 @@ int processFile() {
 			if(contentTemp)
 				content[i] = contentTemp;
 		}
-		fprintf(fDone, "bb%s %s\n", content[0], content[1]);
-		//fprintf(fDone, "lev_distance = %d\n", lev_distance("ÓªÑø", "ÓªÊÇ"));
-		//ÔÚfromContentÖĞÕÒµ½Óëcontent[0]×îÏàËÆµÄ
+		//fprintf(fDone, "bb%s %s\n", content[0], content[1]);
+		//fprintf(fDone, "lev_distance = %d\n", lev_distance("Óªï¿½ï¿½", "Óªï¿½ï¿½"));
+		//åœ¨fromContentä¸­æ‰¾åˆ°ä¸content[0]æœ€ç›¸ä¼¼çš„
 		distance = strlen(content[0]);
-		for (i = startContentNum; i < contentNum; i++){  /****ÒªĞŞ¸Ä±ğÍü¼Ç*****/
-			//lev_distance == 0Ê±£¬ÕÒµ½Ò»ÑùµÄ
+		for (i = startContentNum; i < contentNum; i++){  /****Òªï¿½Ş¸Ä±ï¿½ï¿½ï¿½ï¿½*****/
+			//lev_distance == 0Ê±ï¿½ï¿½ï¿½Òµï¿½Ò»ï¿½ï¿½ï¿½
 			if ((d = lev_distance(content[0], fromContent[i].elementsName)) == 0){
 				correctContentNum = i;
-				startContentNum = i + 1; //¼ì²âÁ½¸ö×Ö·û´®Ò»ÑùÊ±£¬½«Ñ­»·ÆğÊ¼´ÓÏÂÒ»ĞĞ¿ªÊ¼£¬²»ÔÙ¼ì²âÖ®Ç°µÄ
-				//µ½×îºóÒ»¸öÊ±£¬ÅĞ¶ÏÊÇ·ñÎª ¡°ÄÜÁ¿¡±£¬
+				startContentNum = i + 1; //æ£€æµ‹ä¸¤ä¸ªå­—ç¬¦ä¸²ä¸€æ ·æ—¶ï¼Œå°†å¾ªç¯èµ·å§‹ä»ä¸‹ä¸€è¡Œå¼€å§‹ï¼Œä¸å†æ£€æµ‹ä¹‹å‰çš„
+				//åˆ°æœ€åä¸€ä¸ªæ—¶ï¼Œåˆ¤æ–­æ˜¯å¦ä¸º â€œèƒ½é‡â€ï¼Œ
 				if (correctContentNum == 0)
 					energyFlag = TRUE;
-				break; //Èô¼ì²éµ½ÍêÈ«Ò»ÑùµÄÁ¢¼´ÍÆ³öÑ­»·
+				break; //è‹¥æ£€æŸ¥åˆ°å®Œå…¨ä¸€æ ·çš„ç«‹å³æ¨å‡ºå¾ªç¯
 			}
-			//·ñÔòÕÒµ½lev_distanceÖµ×îĞ¡µÄ£¬×÷ÎªÒ»ÖÂµÄ
+			//å¦åˆ™æ‰¾åˆ°lev_distanceå€¼æœ€å°çš„ï¼Œä½œä¸ºä¸€è‡´çš„
 			else {
-				//½«¾àÀë×îĞ¡µÄ¼ÇÂ¼ÏÂÀ´
+				//å°†è·ç¦»æœ€å°çš„è®°å½•ä¸‹æ¥
 				if (distance > d){
 					distance = d;
 					correctContentNum = i;
 				}
-				//µ½×îºóÒ»¸öÊ±£¬ÅĞ¶ÏÊÇ·ñÎª ¡°ÄÜÁ¿¡±£¬
+				//åˆ°æœ€åä¸€ä¸ªæ—¶ï¼Œåˆ¤æ–­æ˜¯å¦ä¸º â€œèƒ½é‡â€ï¼Œ
 				if ((correctContentNum != -1) && (i == (contentNum-1))){
 					if (correctContentNum == 0)
 						energyFlag = TRUE;
 				}
 			}
 		}
-		//´ÓÄÜÁ¿¿ªÊ¼Êä³ö
+		//ä»èƒ½é‡å¼€å§‹è¾“å‡º
 		//if ((correctContentNum != -1) && (energyFlag == TRUE)){
 		if (correctContentNum != -1){
-			fprintf(fDone, "%s->%s,distance = %d\n", content[0], fromContent[correctContentNum].elementsName, distance);
-			fprintf(fDone, "%.2f\n", getContent(content[1]));
+//			fprintf(fDone, "%s->%s,distance = %d    ", content[0], fromContent[correctContentNum].elementsName, distance);
+//			fprintf(fDone, "content = %.2f     ", getContent(content[1]));
 
 			fromContent[correctContentNum].content = getContent(content[1]);
 		}
@@ -163,14 +163,14 @@ int processFile() {
     }
 	fclose(fFromContent);
 
-
 	printfFromContent();
 	fclose(fDone);
+
 	return 0;
 }
 
-//@func:½«content[1]×ª»¯Îªfloat,¼´º¬Á¿µÄ´óĞ¡
-//@paras:c¾ùÎªc·ç¸ñ×Ö·û´®
+///@func:å°†content[1]è½¬åŒ–ä¸ºfloat,å³å«é‡çš„å¤§å°
+//@paras:cå‡ä¸ºcé£æ ¼å­—ç¬¦ä¸²
 float getContent(char *c)
 {
 	float content = 0;
@@ -194,13 +194,13 @@ float getContent(char *c)
 	return content;
 }
 
-//@func:fromContenÊä³ö¹Û²ì
-//@paras:ÎŞ
+//@func:fromContenè¾“å‡ºè§‚å¯Ÿ
+//@paras:æ— 
 void printfFromContent(void)
 {
 	char i = 0;
-//	FILE *fDone; //¶¨ÒåÎÄ¼şÁ÷Ö¸Õë£¬ÓÃÓÚ´ò¿ª¶ÁÈ¡µÄÎÄ¼ş
-//	fDone = fopen("/data/data/com.example.tagidentification/files/result.txt","w"); //Ö»¶Á·½Ê½´ò¿ªÎÄ¼şfromContentV1.txt
+//	FILE *fDone; //ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½Ö¸ï¿½ë£¬ï¿½ï¿½ï¿½Ú´ò¿ª¶ï¿½È¡ï¿½ï¿½ï¿½Ä¼ï¿½
+//	fDone = fopen("/data/data/com.example.tagidentification/files/result.txt","w"); //Ö»ï¿½wï¿½Ê½ï¿½ï¿½ï¿½Ä¼ï¿½fromContentV1.txt
 
 
 	for ( ; i < contentNum; i++){
@@ -211,20 +211,20 @@ void printfFromContent(void)
 }
 
 
-//@func:¼ÆËã×Ö·û´®s ºÍ tÖ®¼äµÄlevenshtein¾àÀë
-//@paras:sºÍt¾ùÎªc·ç¸ñ×Ö·û´®
+//@func:è®¡ç®—å­—ç¬¦ä¸²s å’Œ tä¹‹é—´çš„levenshteinè·ç¦»
+//@paras:så’Œtå‡ä¸ºcé£æ ¼å­—ç¬¦ä¸²
 unsigned lev_distance(const char *s,const char *t)
 {
-    //n:Ä¿±êµ¥´ÊtµÄ³¤¶È   m:Ô´µ¥´ÊsµÄ³¤¶È
+	 //n:ç›®æ ‡å•è¯tçš„é•¿åº¦   m:æºå•è¯sçš„é•¿åº¦
     unsigned m_tmp=0,n_tmp=0;
     int i=0;
-    //¼ÆËãÔ´µ¥´Ê³¤¶È
+    //è®¡ç®—æºå•è¯é•¿åº¦
     while(s[i])
     {
         i++;
         m_tmp++;
     }
-    //¼ÆËãÄ¿±êµ¥´Ê³¤¶È
+    //è®¡ç®—ç›®æ ‡å•è¯é•¿åº¦
     i=0;
     while(t[i])
     {
@@ -239,12 +239,12 @@ unsigned lev_distance(const char *s,const char *t)
     const unsigned m=m_tmp+1;
     const unsigned n=n_tmp+1;
     unsigned matrix[m][n];
-    //¸ø¾ØÕóµÄµÚ0ĞĞºÍµÚ0ÁĞ¸³Öµ
+    //ç»™çŸ©é˜µçš„ç¬¬0è¡Œå’Œç¬¬0åˆ—èµ‹å€¼  Öµ
     for(i=0;i<m;i++)
         matrix[i][0]=i;
     for(i=0;i<n;i++)
         matrix[0][i]=i;
-    //Ìî³ä¾ØÕóµÄÆäËûÔªËØ£¬ÖğĞĞÌî³ä
+    //å¡«å……çŸ©é˜µçš„å…¶ä»–å…ƒç´ ï¼Œé€è¡Œå¡«å……
     int j;
     for(i=1;i<m;i++)
         for(j=1;j<n;j++)
@@ -254,20 +254,11 @@ unsigned lev_distance(const char *s,const char *t)
                 cost=0;
             matrix[i][j]=min(matrix[i-1][j]+1,matrix[i][j-1]+1,matrix[i-1][j-1]+cost);
         }
-    //²é¿´¾ØÕó¸÷ÔªËØµÄÖµ
-//	for(i=0;i<m;i++)
-//    {
-//        for(j=0;j<n;j++)
-//        {
-//            printf("%d\t",matrix[i][j]);
-//        }
-//        printf("\n");
-//    }
-    //·µ»Ømatrix[m-1][n-1],¼´Á½¸ö×Ö·û´®Ö®¼äµÄ¾àÀë
+
     return matrix[m-1][n-1];
 }
 
-//@func:ÇóÈı¸öÊıµÄ×îĞ¡Öµ
+//@func:æ±‚ä¸‰ä¸ªæ•°çš„æœ€å°å€¼  Öµ
 unsigned min(unsigned x,unsigned y,unsigned z )
 {
     unsigned tmp=(x<y ? x:y);

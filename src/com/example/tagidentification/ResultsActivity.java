@@ -16,10 +16,10 @@ import android.widget.TextView;
 
 public class ResultsActivity extends Activity {
 	
-//	private String resultUrl = "mnt/sdcard/28ChinesePRC+English.txt";
 	String outputPath;
 	TextView tv;
 	private String resultUrl2 = "result2.txt";
+	
 	public native int processFileNative();
 	static {
 		try {

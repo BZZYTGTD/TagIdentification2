@@ -45,13 +45,6 @@ public class AsyncProcessTask extends AsyncTask<String, String, Boolean> {
 	protected Boolean doInBackground(String... args) {
 
 		String inputFile = args[0];
-//		File file = new File(Environment.getExternalStorageDirectory(),"result.txt");
-//		try {
-//			FileOutputStream fileOutputStream = new FileOutputStream(file);
-//		} catch (FileNotFoundException e1) {
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
-//		}
 		String outputFile = args[1];
 		System.out.println("outputFile :"+ outputFile);
 
@@ -130,10 +123,6 @@ public class AsyncProcessTask extends AsyncTask<String, String, Boolean> {
 			if( task.Status == Task.TaskStatus.Completed ) {
 				publishProgress( "Downloading.." );
 				
-//				FileOutputStream fos = new FileOutputStream("mnt/sdcard/aa.txt");
-				
-//				 OutputStream out = new FileOutputStream(activity.getFilesDir()+outputFile);
-//				 OutputStreamWriter osw= new OutputStreamWriter(out,"UTF-8");
 				 FileOutputStream fos = activity.openFileOutput(outputFile,Context.MODE_WORLD_READABLE+Context.MODE_WORLD_WRITEABLE);
 				
 				 try {
