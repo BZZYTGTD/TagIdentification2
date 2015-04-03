@@ -21,6 +21,9 @@ JNIEXPORT jint JNICALL Java_com_example_tagidentification_ResultsActivity_proces
 	return 0;
 }
 
+
+
+/*-----------变量定义---------------*/
 //营养成分表结构体
 struct fromContent{
     char *elementsName; //项目
@@ -79,16 +82,17 @@ struct fromContent{
 	"锰", "毫克", "mg", 0.01, 0.00
 };
 
-unsigned int min_zhengge(unsigned int x,unsigned int y,unsigned int z );
-unsigned int lev_distance(const char *s,const char *t);
+unsigned min(unsigned x,unsigned y,unsigned z );
+unsigned lev_distance(const char *s,const char *t);
 float getContent(char *c);
 void printfFromContent(void);
+
+FILE *fDone; //定义文件流指针，用于打开读取的文件
 
 int processFile() {
 
 	char line[lineNum]; //定义一个字符串数组，用于存储读取的字符
-	//char lineTemp[lineNum] = "能置      2100千焦   25%     "; //定义一个字符串数组，用于存储读取的字符
-	FILE *fFromContent = NULL; //定义文件流指针，用于打开读取的文件
+	FILE *fFromContent; //定义文件流指针，用于打开读取的文件
 	char *content[oneLineNum]; //定义每行中的内容
 	char *contentTemp;         //用于临时保存content[oneLineNum]防止null的读入
 	unsigned int distance = 0; //两个字符串之间的距离
@@ -100,33 +104,29 @@ int processFile() {
 	char energyFlag = FALSE; //是否为能量的标志位
 
 
-//    fFromContent = fopen("mnt/sdcard/willdo.txt","r"); //读写方式打开文件fromContentV1.txt
-    fFromContent = fopen("/data/data/com.example.tagidentification/files/result.txt","r");
+	fDone = fopen("/data/data/com.example.tagidentification/files/result2.txt","w"); //只读方式打开文件fromContentV1.txt
+    fFromContent = fopen("/data/data/com.example.tagidentification/files/result.txt","r"); //只读方式打开文件fromContentV1.txt
 
 	//逐行读取fFromContent所指向文件中的内容
-	while (fgets(line, lineNum, fFromContent) != NULL)
+	while (fgets(line,lineNum,fFromContent) != NULL)
 	{
+		fprintf(fDone, "aa%s", line);
 		//printf("%s", line);
 
 		//将line中空格隔开的内容，分别存入content指针数组中
 		contentTemp = strtok(line, " ");
 		if(contentTemp)
 			content[0] = contentTemp;
-
 		for (i = 1; i < oneLineNum; i++){
 			contentTemp = strtok(NULL, " ");
 			if(contentTemp)
 				content[i] = contentTemp;
 		}
-
-		//printf("%s %s\n", content[0], content[1]);
-		//system("pause");
-
+		fprintf(fDone, "bb%s %s\n", content[0], content[1]);
+		//fprintf(fDone, "lev_distance = %d\n", lev_distance("营养", "营是"));
 		//在fromContent中找到与content[0]最相似的
 		distance = strlen(content[0]);
-
-		for (i = startContentNum; i < contentNum; i++){
-
+		for (i = startContentNum; i < contentNum; i++){  /****要修改别忘记*****/
 			//lev_distance == 0时，找到一样的
 			if ((d = lev_distance(content[0], fromContent[i].elementsName)) == 0){
 				correctContentNum = i;
@@ -150,12 +150,11 @@ int processFile() {
 				}
 			}
 		}
-
 		//从能量开始输出
-		if ((correctContentNum != -1) && (energyFlag == TRUE)){
-
-			printf("%s->%s,distance = %d\n", content[0], fromContent[correctContentNum].elementsName, distance);
-			printf("%.2f\n", getContent(content[1]));
+		//if ((correctContentNum != -1) && (energyFlag == TRUE)){
+		if (correctContentNum != -1){
+			fprintf(fDone, "%s->%s,distance = %d\n", content[0], fromContent[correctContentNum].elementsName, distance);
+			fprintf(fDone, "%.2f\n", getContent(content[1]));
 
 			fromContent[correctContentNum].content = getContent(content[1]);
 		}
@@ -164,8 +163,9 @@ int processFile() {
     }
 	fclose(fFromContent);
 
-	printfFromContent();
 
+	printfFromContent();
+	fclose(fDone);
 	return 0;
 }
 
@@ -176,70 +176,48 @@ float getContent(char *c)
 	float content = 0;
 	float power = 1;
 
-	while (*c>='0' && *c<='9'){
+	while (isdigit(*c)){
 		content = content * 10 + (*c - '0');
 		c++;
 	}
 	if (*c == '.'){
 		c++;
 	}
-	while (*c>='0' && *c<='9'){
+	while (isdigit(*c)){
 		power *= 10;
 		content = content * 10 + (*c - '0');
 		c++;
 	}
-
-	//while (isdigit(*c)){
-	//	content = content * 10 + (*c - '0');
-	//	c++;
-	//}
-	//if (*c == '.'){
-	//	c++;
-	//}
-	//while (isdigit(*c)){
-	//	power *= 10;
-	//	content = content * 10 + (*c - '0');
-	//	c++;
-	//}
 	content /= power;
 	//printf("%.2f\n", content);
 
 	return content;
 }
 
-//@func:fromConten输出至txt文件中
+//@func:fromConten输出观察
 //@paras:无
 void printfFromContent(void)
 {
 	char i = 0;
-	FILE *fDone; //定义文件流指针，用于打开读取的文件
-//	fDone = fopen("mnt/sdcard/Done.txt","w"); //只读方式打开文件fromContentV1.txt
-	fDone = fopen("/data/data/com.example.tagidentification/files/result.txt","w");
+//	FILE *fDone; //定义文件流指针，用于打开读取的文件
+//	fDone = fopen("/data/data/com.example.tagidentification/files/result.txt","w"); //只读方式打开文件fromContentV1.txt
+
 
 	for ( ; i < contentNum; i++){
 		//printf("%s: %.2f%s(%s)\n", fromContent[i].elementsName, fromContent[i].content, fromContent[i].chineseUnit, fromContent[i].englishUnit);
 		fprintf(fDone, "%s: %.2f%s(%s)\n", fromContent[i].elementsName, fromContent[i].content, fromContent[i].chineseUnit, fromContent[i].englishUnit);
 	}
-	fclose(fDone);
+//	fclose(fDone);
 }
 
 
 //@func:计算字符串s 和 t之间的levenshtein距离
 //@paras:s和t均为c风格字符串
-unsigned int lev_distance(const char *s,const char *t)
+unsigned lev_distance(const char *s,const char *t)
 {
     //n:目标单词t的长度   m:源单词s的长度
-    unsigned int m_tmp=0,n_tmp=0;
-    unsigned int i;
-	i=0;
-	unsigned int j;
-
-
-
-/*    const unsigned m=m_tmp+1;
-    const unsigned n=n_tmp+1;
-    unsigned matrix[m][n]; */
-
+    unsigned m_tmp=0,n_tmp=0;
+    int i=0;
     //计算源单词长度
     while(s[i])
     {
@@ -258,27 +236,23 @@ unsigned int lev_distance(const char *s,const char *t)
     if(n_tmp==0)
         return m_tmp;
 
-	const unsigned int m=m_tmp+1;
-    const unsigned int n=n_tmp+1;
-    unsigned int **matrix;
-	matrix = new unsigned int *[m];
-	for(i=0;i<m;i++)
-		matrix[i] = new unsigned int[n];
-
+    const unsigned m=m_tmp+1;
+    const unsigned n=n_tmp+1;
+    unsigned matrix[m][n];
     //给矩阵的第0行和第0列赋值
     for(i=0;i<m;i++)
         matrix[i][0]=i;
     for(i=0;i<n;i++)
         matrix[0][i]=i;
     //填充矩阵的其他元素，逐行填充
-
+    int j;
     for(i=1;i<m;i++)
         for(j=1;j<n;j++)
         {
-            unsigned int cost=1;
+            unsigned cost=1;
             if(s[i-1]==t[j-1])
                 cost=0;
-            matrix[i][j]=min_zhengge(matrix[i-1][j]+1,matrix[i][j-1]+1,matrix[i-1][j-1]+cost);
+            matrix[i][j]=min(matrix[i-1][j]+1,matrix[i][j-1]+1,matrix[i-1][j-1]+cost);
         }
     //查看矩阵各元素的值
 //	for(i=0;i<m;i++)
@@ -294,9 +268,10 @@ unsigned int lev_distance(const char *s,const char *t)
 }
 
 //@func:求三个数的最小值
-unsigned int min_zhengge(unsigned int x,unsigned int y,unsigned int z )
+unsigned min(unsigned x,unsigned y,unsigned z )
 {
-    unsigned int tmp=(x<y ? x:y);
+    unsigned tmp=(x<y ? x:y);
     tmp=(tmp<z ? tmp:z);
     return tmp;
 }
+

@@ -225,7 +225,7 @@ public class CameraActivity extends Activity implements
 		switch(item.getItemId()){
 			case menu_add:
 //				//读取指定文件夹下固定图片并直接进行处理
-				readPath = "/mnt/sdcard/MyTagApp/4.jpg";
+				readPath = "/mnt/sdcard/MyTagApp/1.jpg";
 				mBitmap = BitmapFactory.decodeFile(readPath);
 				processPhotos(mBitmap);
 //				Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
@@ -657,7 +657,7 @@ public class CameraActivity extends Activity implements
               //显示特殊大津法
               newotsuBitmap = Bitmap.createBitmap(grayBitmap);
               Utils.matToBitmap(grayMat, newotsuBitmap);
-              mDrawIV.setImageBitmap(newotsuBitmap);
+//              mDrawIV.setImageBitmap(newotsuBitmap);
               savePhotos(newotsuBitmap);
                
              

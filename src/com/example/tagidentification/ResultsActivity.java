@@ -19,6 +19,7 @@ public class ResultsActivity extends Activity {
 //	private String resultUrl = "mnt/sdcard/28ChinesePRC+English.txt";
 	String outputPath;
 	TextView tv;
+	private String resultUrl2 = "result2.txt";
 	public native int processFileNative();
 	static {
 		try {
@@ -56,18 +57,16 @@ public class ResultsActivity extends Activity {
 			processFileNative();
 			StringBuffer contents = new StringBuffer();
 
-			FileInputStream fis = openFileInput(outputPath);
-			
+//			FileInputStream fis = openFileInput(outputPath);
+			FileInputStream fis = openFileInput(resultUrl2);
 			
 			try {
-//				Reader reader = new InputStreamReader(fis, "UTF-8");
 				Reader reader = new InputStreamReader(fis, "UTF-8");
 				BufferedReader bufReader = new BufferedReader(reader);
 				String text = null;
 				while ((text = bufReader.readLine()) != null) {
 					contents.append(text).append(System.getProperty("line.separator"));
 					System.out.println("contents.toString():"+ contents.toString());
-//					System.out.println("text:"+text);
 				}
 				
 			} finally {

@@ -210,9 +210,12 @@ public class Client {
 		URLConnection connection = url.openConnection(); // do not use
 															// authenticated
 															// connection
-
+//		Reader reader = new InputStreamReader(fis, "UTF-8");
+//		BufferedReader bufReader = new BufferedReader(reader);
+//		InputStreamReader is = new InputStreamReader(connection.getInputStream(),"UTF-8");
 		BufferedInputStream reader = new BufferedInputStream(
 				connection.getInputStream());
+		
 
 		FileOutputStream out = new FileOutputStream(outputFile);
 

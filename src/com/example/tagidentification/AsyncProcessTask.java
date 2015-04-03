@@ -3,6 +3,9 @@ package com.example.tagidentification;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 
 import com.abbyy.ocrsdk.*;
 
@@ -50,7 +53,6 @@ public class AsyncProcessTask extends AsyncTask<String, String, Boolean> {
 //			e1.printStackTrace();
 //		}
 		String outputFile = args[1];
-//		String outputFile = file;
 		System.out.println("outputFile :"+ outputFile);
 
 		try {
@@ -128,9 +130,13 @@ public class AsyncProcessTask extends AsyncTask<String, String, Boolean> {
 			if( task.Status == Task.TaskStatus.Completed ) {
 				publishProgress( "Downloading.." );
 				
-				FileOutputStream fos = activity.openFileOutput(outputFile,Context.MODE_WORLD_READABLE+Context.MODE_WORLD_WRITEABLE);
+//				FileOutputStream fos = new FileOutputStream("mnt/sdcard/aa.txt");
 				
-				try {
+//				 OutputStream out = new FileOutputStream(activity.getFilesDir()+outputFile);
+//				 OutputStreamWriter osw= new OutputStreamWriter(out,"UTF-8");
+				 FileOutputStream fos = activity.openFileOutput(outputFile,Context.MODE_WORLD_READABLE+Context.MODE_WORLD_WRITEABLE);
+				
+				 try {
 					restClient.downloadResult(task, fos);
 				} finally {
 					fos.close();
