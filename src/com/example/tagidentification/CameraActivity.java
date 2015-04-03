@@ -68,7 +68,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 public class CameraActivity extends Activity implements 
 	Callback, OnClickListener, AutoFocusCallback
-//	,MediaScannerConnectionClient
+
 	{
 
 	public static final int MEDIA_TYPE_IMAGE = 1;
