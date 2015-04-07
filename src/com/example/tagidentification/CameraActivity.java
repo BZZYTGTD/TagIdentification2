@@ -63,9 +63,9 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.Toast;
+import android.widget.RelativeLayout.LayoutParams;
 public class CameraActivity extends Activity implements 
 	Callback, OnClickListener, AutoFocusCallback
 
@@ -95,7 +95,7 @@ public class CameraActivity extends Activity implements
 	long touchTime = 0;  
 	private int checkItem;
 	Button captureButton;
-	Button getPhotos;
+	Button uploading;
 	private boolean isRecording = false;
 	
 	private Camera.AutoFocusCallback mAutoFocusCallback;
@@ -140,10 +140,10 @@ public class CameraActivity extends Activity implements
          
         linearrLayout01 = (LinearLayout)findViewById(R.id.linearLayout01);
          preview = (SurfaceView) findViewById(R.id.camera_preview);
-         //surfaceview预览尺寸：1080*1080
-         FrameLayout.LayoutParams layoutParams = 
-        		 new FrameLayout.LayoutParams(mScreenWidth, mScreenWidth);
-         preview.setLayoutParams(layoutParams);
+//         //surfaceview预览尺寸：1080*1080
+//         FrameLayout.LayoutParams layoutParams = 
+//        		 new FrameLayout.LayoutParams(mScreenWidth, mScreenWidth);
+//         preview.setLayoutParams(layoutParams);
          preview.setOnClickListener(this);
         
          mHolder = preview.getHolder(); 
@@ -153,6 +153,10 @@ public class CameraActivity extends Activity implements
      
          mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);  
          mDrawIV = (com.example.tagidentification.DrawImageView)findViewById(R.id.drawIV);
+         LayoutParams params = (LayoutParams) mDrawIV.getLayoutParams();  
+         params.height= mScreenWidth;  
+         params.width = mScreenWidth;  
+         mDrawIV.setLayoutParams(params);  
          mDrawIV.onDraw(new Canvas());
          
          mDraw = new DrawCaptureRect(CameraActivity.this,
@@ -160,9 +164,9 @@ public class CameraActivity extends Activity implements
          
          
         captureButton = (Button) findViewById(R.id.button_capture);
-        getPhotos = (Button)findViewById(R.id.button_getPhotos);
+        uploading = (Button)findViewById(R.id.button_UpLoading);
         captureButton.setOnClickListener(this);
-        getPhotos.setOnClickListener(this);
+        uploading.setOnClickListener(this);
         // 获取相机ID
         mDefaultCameraId = getDefaultCameraId();
         mCameraCurrentlyLocked = mDefaultCameraId;
@@ -358,7 +362,10 @@ public class CameraActivity extends Activity implements
 	    return c; // returns null if camera is unavailable
 	}
 
-	public Bitmap rectBitmap;
+	//拍照回调时，修剪图片
+		public Bitmap rectBitmap;
+		public Bitmap sizeBitmap;
+		public Bitmap rotaBitmap;
 	private PictureCallback mPicture = new PictureCallback() {
 
 	    @Override
@@ -372,27 +379,36 @@ public class CameraActivity extends Activity implements
             }  
 	        Matrix matrix = new Matrix();  
             matrix.postRotate((float)90.0);  
-            Bitmap rotaBitmap = Bitmap.createBitmap(bitmap, 
+            rotaBitmap = Bitmap.createBitmap(bitmap, 
             		0, 0, bitmap.getWidth(), bitmap.getHeight(), 
             		matrix, false);
           
-            
-            //原3264*2448.surfaview1080��1080 
-          
-            Bitmap sizeBitmap = Bitmap.createScaledBitmap(rotaBitmap, bitmap.getHeight(), bitmap.getHeight(), true);  
-             rectBitmap = Bitmap.createBitmap(sizeBitmap, 0, 0, bitmap.getHeight(), bitmap.getHeight());//��ȡ
-            
-            System.out.println("rectBitmap.getWidth() :"+rectBitmap.getWidth() + "rectBitmap.getHeight() :" + rectBitmap.getHeight());
-	       
-            if(null != rectBitmap)  {
-	        		 savePhotos(rectBitmap);
-                	 
+            //下面也可以实现截取图片的一部分为正方形区域
+//          Mat rotaBitmapMat = new Mat();
+//          Mat newrotaBitmapMat = new Mat(); 
+//          Utils.bitmapToMat(rotaBitmap, rotaBitmapMat);
+//          org.opencv.core.Size size;
+//          size =  rotaBitmapMat.size();
+//       
+//          rotaBitmapMat = rotaBitmapMat.rowRange(0, (int)size.width);
+//           System.out.println("rotaBitmapMat.size"+rotaBitmapMat.size());
+//           sizeBitmap = Bitmap.createBitmap(bitmap, 0,0, bitmap.getHeight(),  bitmap.getHeight());
+//         Utils.matToBitmap(rotaBitmapMat, sizeBitmap);
+
+          //     旋转之后3264*2448. 到2448 *3264
+     // System.out.println("rotaBitmap.getWidth() :"+ rotaBitmap.getWidth()+"rotaBitmap.getHeight()"+rotaBitmap.getHeight());
+          sizeBitmap = Bitmap.createBitmap(rotaBitmap, 0,0,rotaBitmap.getWidth(), rotaBitmap.getWidth());  
+	     //  System.out.println("sizeBitmap.getWidth()"+sizeBitmap.getWidth()+"sizeBitmap.getHeight()"+sizeBitmap.getHeight());
+         if(null != sizeBitmap)  {
+	        		 savePhotos(sizeBitmap);
 	         }
    		
 		    // 重新预览
 	        mCamera.stopPreview();
 	        mCamera.startPreview();
 	        bitmap.recycle();//回收bitmap
+	        rotaBitmap.recycle();
+	        sizeBitmap.recycle();
 	    }
 
 	};
@@ -574,15 +590,15 @@ public class CameraActivity extends Activity implements
 			// TODO Auto-generated method stub
 			 switch (v.getId()) {
              case R.id.button_capture: //����
-//                     mCamera.autoFocus(this);//自动预览
+                     mCamera.autoFocus(this);//自动聚焦
                      mCamera.takePicture(null, null, mPicture);
                      Toast.makeText(getApplicationContext(), "Yes", Toast.LENGTH_SHORT).show();
                      
                      break;
              case R.id.camera_preview:
-            	 mCamera.autoFocus(this);//自动预览
+            	 mCamera.autoFocus(this);//自动聚焦
             	 break;
-             case R.id.button_getPhotos:
+             case R.id.button_UpLoading:
             	 mBitmap = readPhotos(rectBitmap);
             	 processPhotos(mBitmap);
             	 break;
@@ -709,6 +725,7 @@ public class CameraActivity extends Activity implements
 //			
 //		}
 		
+		private Camera.Size cs;
 		@Override
 		public void surfaceChanged(SurfaceHolder holder, int format, int width,
 				int height) {
@@ -732,7 +749,10 @@ public class CameraActivity extends Activity implements
  	           params.setPictureFormat(PixelFormat.JPEG);  
 				 
 // 	          params.setPictureSize(800, 600); 
-//			 params.setPictureSize(2592, 1936); 
+ 	          List<Camera.Size> sizes = params.getSupportedPreviewSizes(); 
+ 	          cs = sizes.get(1); 
+ 	        params.setPreviewSize(cs.width, cs.height);//800*600
+ 	           System.out.println("cs.width"+ cs.width+ "cs.height"+ cs.height);
  	           
 			 params.setJpegQuality(100);// ������Ƭ����
 			 params.setRotation(90);  

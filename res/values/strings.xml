@@ -8,7 +8,8 @@
     <string name="scan">食品标签扫描区</string>
     <string name="menu_pictureFromFile">PictureFromFile</string>
 	<string name="menu_help">Help</string>
-	<string name="GetPhotos">UpLoading</string>
+	<string name="UpLoading">UpLoading</string>
 	<string name="menu_settings">设置</string>
 	<string name="title_activity_results">Result</string>
+	<string name="area_tag_scan"> Labels Scan Area</string>
 </resources>

@@ -24,6 +24,7 @@
         </activity>
         
         <activity 
+             android:label="@string/area_tag_scan" 
             android:name="com.example.tagidentification.CameraActivity"
              />
           
