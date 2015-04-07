@@ -230,12 +230,12 @@ public class CameraActivity extends Activity implements
 		switch(item.getItemId()){
 			case menu_add:
 //				//读取固定路径下单张图片
-				readPath = "/mnt/sdcard/MyTagApp/4.jpg";
-				mBitmap = BitmapFactory.decodeFile(readPath);
-				processPhotos(mBitmap);
-//				Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-//		    	intent.setType("image/*");
-//		    	startActivityForResult(intent, SELECT_FILE);
+//				readPath = "/mnt/sdcard/MyTagApp/4.jpg";
+//				mBitmap = BitmapFactory.decodeFile(readPath);
+//				processPhotos(mBitmap);
+				Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+		    	intent.setType("image/*");
+		    	startActivityForResult(intent, SELECT_FILE);
 				 return true;
 			case menu_help:
 				Toast.makeText(this, "help~", Toast.LENGTH_SHORT).show();
@@ -364,7 +364,7 @@ public class CameraActivity extends Activity implements
 	}
 
 	//拍照回调时，修剪图片
-		public Bitmap rectBitmap;
+		
 		public Bitmap sizeBitmap;
 		public Bitmap rotaBitmap;
 	private PictureCallback mPicture = new PictureCallback() {
@@ -409,7 +409,7 @@ public class CameraActivity extends Activity implements
 	        mCamera.startPreview();
 	        bitmap.recycle();//回收bitmap
 	        rotaBitmap.recycle();
-	        sizeBitmap.recycle();
+	       
 	    }
 
 	};
@@ -418,14 +418,17 @@ public class CameraActivity extends Activity implements
 	private String savePath;
 	//save photos 
 	public void savePhotos(Bitmap bm){  
-         savePath = "/mnt/sdcard/MyTagApp/";  
-        File folder = new File(savePath);  
+
+	    File folder = new File(Environment.getExternalStoragePublicDirectory(
+	              Environment.DIRECTORY_PICTURES), "MyTagApp");
+//         savePath = "/mnt/sdcard/MyTagApp/";  
+//        File folder = new File(savePath);  
         if(!folder.exists()) 
         {  
             folder.mkdir();  
         }  
         long dataTake = System.currentTimeMillis();  
-         jpegName = savePath + dataTake +".jpg";  
+         jpegName = folder.getPath() + File.separator + dataTake +".jpg";  
         Log.i(TAG, "saveJpeg:jpegName--" + jpegName);  
         try {  
         	System.out.println("jpegName:  "+jpegName);
@@ -600,7 +603,8 @@ public class CameraActivity extends Activity implements
             	 mCamera.autoFocus(this);//自动聚焦
             	 break;
              case R.id.button_UpLoading:
-            	 mBitmap = readPhotos(rectBitmap);
+            	 Toast.makeText(this, "Start UpLoading", Toast.LENGTH_SHORT).show();
+            	 mBitmap = readPhotos(sizeBitmap);
             	 processPhotos(mBitmap);
             	 break;
              default:
@@ -637,23 +641,23 @@ public class CameraActivity extends Activity implements
 //        	 mDrawIV.setImageBitmap(otsuBitmap);
 //        	 savePhotos(otsuBitmap);
         	 
-        	 //  #Hough变换矫正图像
-        	 edgesBitmap = Bitmap.createBitmap(otsuBitmap);
-        	 Imgproc.Canny(otsuMat, edgesMat, 50, 150);
-        	 Utils.matToBitmap(edgesMat, edgesBitmap);
-        	 Imgproc.HoughLines(edgesMat, linesMat, 1, Math.PI/360, mBitmapWidth/5);
-        	 double[] lines = linesMat.get(0, 0);
-        	 double rho = lines[0];
-        	 double theta = lines[1];
-        	 float thetabSum = 0;
-             float thetabNum = 0;
-             thetabSum += (theta-Math.PI/2);
-             thetabNum += 1;
-             
-             
-             imageCorrectGrayBitmap = rotate_about_center(grayBitmap,(float)(thetabSum/thetabNum*180/Math.PI),1.0);//角度
-//             imageCorrectGrayBitmap = rotate_about_center(grayBitmap,(float)(30),1.0);
-        	Utils.bitmapToMat(imageCorrectGrayBitmap, imageCorrectGrayMat);
+//        	 //  #Hough变换矫正图像
+//        	 edgesBitmap = Bitmap.createBitmap(otsuBitmap);
+//        	 Imgproc.Canny(otsuMat, edgesMat, 50, 150);
+//        	 Utils.matToBitmap(edgesMat, edgesBitmap);
+//        	 Imgproc.HoughLines(edgesMat, linesMat, 1, Math.PI/360, mBitmapWidth/5);
+//        	 double[] lines = linesMat.get(0, 0);
+//        	 double rho = lines[0];
+//        	 double theta = lines[1];
+//        	 float thetabSum = 0;
+//             float thetabNum = 0;
+//             thetabSum += (theta-Math.PI/2);
+//             thetabNum += 1;
+//             
+//             
+//             imageCorrectGrayBitmap = rotate_about_center(grayBitmap,(float)(thetabSum/thetabNum*180/Math.PI),1.0);//角度
+////             imageCorrectGrayBitmap = rotate_about_center(grayBitmap,(float)(30),1.0);
+//        	Utils.bitmapToMat(imageCorrectGrayBitmap, imageCorrectGrayMat);
         	
 //             mDrawIV.setImageBitmap(imageCorrectGrayBitmap);
 //             savePhotos(imageCorrectGrayBitmap);
@@ -676,10 +680,10 @@ public class CameraActivity extends Activity implements
               savePhotos(newotsuBitmap);
                
              
-//        	 results = new Intent(this, ResultsActivity.class);
-//        	 results.putExtra("IMAGE_PATH", jpegName);
-//        	 results.putExtra("RESULT_PATH", resultUrl);
-//        	 startActivity(results);
+        	 results = new Intent(this, ResultsActivity.class);
+        	 results.putExtra("IMAGE_PATH", jpegName);
+        	 results.putExtra("RESULT_PATH", resultUrl);
+        	 startActivity(results);
 			
 		}
 		
