@@ -89,7 +89,7 @@ public class CameraActivity extends Activity implements
     public static final String TAG = "TagIdentification";
 	private static final int TAKE_PICTURE = 1;
 	private static final int SELECT_FILE = 2;
-	private Camera mCamera;
+	public static Camera mCamera;
 //    private CameraPreview mPreview;
     private MediaRecorder mMediaRecorder;
     long waitTime = 2000;    
@@ -159,7 +159,7 @@ public class CameraActivity extends Activity implements
          params.width = mScreenWidth;  
          mDrawIV.setLayoutParams(params);  
          mDrawIV.onDraw(new Canvas());
-         
+//         mDrawIV.setOnClickListener(this);
          mDraw = new DrawCaptureRect(CameraActivity.this,
         		 mFocusLeft,mFocusTop,mFocusWidth,mFocusHeight);
          
@@ -406,7 +406,7 @@ public class CameraActivity extends Activity implements
 	        mCamera.startPreview();
 	        bitmap.recycle();//回收bitmap
 	        rotaBitmap.recycle();
-	       
+	        sizeBitmap.recycle();
 	    }
 
 	};
@@ -585,7 +585,7 @@ public class CameraActivity extends Activity implements
 //		private String resultUrl = "mnt/sdcard/28ChinesePRC+English.txt";
 		private Intent results;
 		private boolean process = false;
-		
+		private ResultsActivity mResultsActivity;
 		@Override
 		public void onClick(View v) {
 			// TODO Auto-generated method stub
@@ -603,7 +603,10 @@ public class CameraActivity extends Activity implements
             	 Toast.makeText(this, "Start UpLoading", Toast.LENGTH_SHORT).show();
             	 mBitmap = readPhotos(sizeBitmap);
             	 processPhotos(mBitmap);
-            	 break;
+            	  break;
+            	  //想用来清空
+//             case R.id.drawIV:
+//            	 mDrawIV.setImageBitmap(null);
              default:
                 	  break;
 			 }
@@ -620,7 +623,7 @@ public class CameraActivity extends Activity implements
              mBitmapWidth = mBitmap.getWidth();
         	 mBitmapHeight = mBitmap.getHeight();
         	 //显示原始图片
-//        	 mDrawIV.setImageBitmap(mBitmap);
+        	 mDrawIV.setImageBitmap(mBitmap);
         	 
         	 //灰度化
         	 grayBitmap = Bitmap.createBitmap(mBitmap.getWidth(), mBitmap.getHeight(), Config.RGB_565);  
@@ -634,49 +637,67 @@ public class CameraActivity extends Activity implements
         	 otsuBitmap = Bitmap.createBitmap(grayBitmap);  
         	 Imgproc.threshold(grayMat, otsuMat, 0, 255, Imgproc.THRESH_BINARY|Imgproc.THRESH_OTSU);
         	 Utils.matToBitmap(otsuMat, otsuBitmap);
-//        	 
-//        	 mDrawIV.setImageBitmap(otsuBitmap);
-//        	 savePhotos(otsuBitmap);
         	 
-//        	 //  #Hough变换矫正图像
+        //	 mDrawIV.setImageBitmap(otsuBitmap);
+      // 	 savePhotos(otsuBitmap);
+        	 
+////        	 //  #Hough变换矫正图像
 //        	 edgesBitmap = Bitmap.createBitmap(otsuBitmap);
 //        	 Imgproc.Canny(otsuMat, edgesMat, 50, 150);
 //        	 Utils.matToBitmap(edgesMat, edgesBitmap);
 //        	 Imgproc.HoughLines(edgesMat, linesMat, 1, Math.PI/360, mBitmapWidth/5);
-//        	 double[] lines = linesMat.get(0, 0);
-//        	 double rho = lines[0];
-//        	 double theta = lines[1];
-//        	 float thetabSum = 0;
-//             float thetabNum = 0;
-//             thetabSum += (theta-Math.PI/2);
-//             thetabNum += 1;
-//             
-//             
-//             imageCorrectGrayBitmap = rotate_about_center(grayBitmap,(float)(thetabSum/thetabNum*180/Math.PI),1.0);//角度
-////             imageCorrectGrayBitmap = rotate_about_center(grayBitmap,(float)(30),1.0);
-//        	Utils.bitmapToMat(imageCorrectGrayBitmap, imageCorrectGrayMat);
+//        	 
+//        	 if(linesMat.get(0, 0) != null){
+//        		 double[] lines = linesMat.get(0, 0);
+//        		 double rho = lines[0];
+//        		 double theta = lines[1];
+//            	 float thetabSum = 0;
+//                 float thetabNum = 0;
+//                 thetabSum += (theta-Math.PI/2);
+//                 thetabNum += 1;
+////                 
+////                 
+//                 imageCorrectGrayBitmap = rotate_about_center(grayBitmap,(float)(thetabSum/thetabNum*180/Math.PI),1.0);//角度
+//////                 imageCorrectGrayBitmap = rotate_about_center(grayBitmap,(float)(30),1.0);
+//            	Utils.bitmapToMat(imageCorrectGrayBitmap, imageCorrectGrayMat);
+//            	
+//        	 }else{
+//        		 imageCorrectGrayMat = grayMat;
+//        		 imageCorrectGrayBitmap = grayBitmap;
+//        	 }
+        	 
         	
 //             mDrawIV.setImageBitmap(imageCorrectGrayBitmap);
 //             savePhotos(imageCorrectGrayBitmap);
-             
+//             
              double rowStep = 15.0;
             
-             org.opencv.core.Size size;
-             size =  grayMat.size();
-             System.out.println("size :"+size+"size.height:"+size.height);//c*r 221*124
-              double sLength = size.height/rowStep;
-              int i;
-              for(i = 1; i <= rowStep; i++){
-	            	  Imgproc.threshold(grayMat.rowRange((int)(sLength*(i-1)), (int)(sLength*i)), grayMat.rowRange((int)(sLength*(i-1)), (int)(sLength*i)), 0, 255, Imgproc.THRESH_BINARY|Imgproc.THRESH_OTSU);
-            	  }
+//             org.opencv.core.Size size;
+//             size =  grayMat.size();
+//             System.out.println("size :"+size+"size.height:"+size.height);//c*r 221*124
+//              double sLength = size.height/rowStep;
+//              int i;
+//              for(i = 1; i <= rowStep; i++){
+//	            	  Imgproc.threshold(grayMat.rowRange((int)(sLength*(i-1)), (int)(sLength*i)), grayMat.rowRange((int)(sLength*(i-1)), (int)(sLength*i)), 0, 255, Imgproc.THRESH_BINARY|Imgproc.THRESH_OTSU);
+//            	  }
+              
+              org.opencv.core.Size size;
+              size =  grayMat.size();
+              System.out.println("size :"+size+"size.height:"+size.height);//c*r 221*124
+               double sLength = size.height/rowStep;
+               int i;
+               for(i = 1; i <= rowStep; i++){
+ 	            	  Imgproc.threshold(grayMat.rowRange((int)(sLength*(i-1)), (int)(sLength*i)), grayMat.rowRange((int)(sLength*(i-1)), (int)(sLength*i)), 0, 255, Imgproc.THRESH_BINARY|Imgproc.THRESH_OTSU);
+             	  }
+             Utils.matToBitmap(grayMat, grayBitmap);
              
-              //特殊大津法
+             //特殊大津法
               newotsuBitmap = Bitmap.createBitmap(grayBitmap);
               Utils.matToBitmap(grayMat, newotsuBitmap);
-              mDrawIV.setImageBitmap(newotsuBitmap);
-//              savePhotos(newotsuBitmap);
+//              mDrawIV.setImageBitmap(newotsuBitmap);
+              savePhotos(newotsuBitmap);
                
-             
+//             
         	 results = new Intent(this, ResultsActivity.class);
         	 results.putExtra("IMAGE_PATH", jpegName);
         	 results.putExtra("RESULT_PATH", resultUrl);

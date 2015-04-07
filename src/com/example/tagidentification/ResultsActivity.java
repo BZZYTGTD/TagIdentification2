@@ -19,6 +19,7 @@ public class ResultsActivity extends Activity {
 	String outputPath;
 	TextView tv;
 	private String resultUrl2 = "result2.txt";
+	private CameraActivity mCameraActivity;
 	
 	public native int processFileNative();
 	static {
@@ -105,4 +106,7 @@ public class ResultsActivity extends Activity {
 
 		private final String _message;
 	}
+
+	
+	
 }
