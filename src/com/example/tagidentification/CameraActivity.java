@@ -21,6 +21,7 @@ import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfDouble;
 import org.opencv.core.Point;
+import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
 import android.annotation.SuppressLint;
@@ -229,7 +230,7 @@ public class CameraActivity extends Activity implements
 		switch(item.getItemId()){
 			case menu_add:
 //				//读取固定路径下单张图片
-				readPath = "/mnt/sdcard/MyTagApp/28.jpg";
+				readPath = "/mnt/sdcard/MyTagApp/4.jpg";
 				mBitmap = BitmapFactory.decodeFile(readPath);
 				processPhotos(mBitmap);
 //				Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
@@ -635,7 +636,7 @@ public class CameraActivity extends Activity implements
 //        	 mDrawIV.setImageBitmap(otsuBitmap);
 //        	 savePhotos(otsuBitmap);
         	 
-        	 //Hough变化
+        	 //  #Hough变换矫正图像
         	 edgesBitmap = Bitmap.createBitmap(otsuBitmap);
         	 Imgproc.Canny(otsuMat, edgesMat, 50, 150);
         	 Utils.matToBitmap(edgesMat, edgesBitmap);
@@ -648,13 +649,12 @@ public class CameraActivity extends Activity implements
              thetabSum += (theta-Math.PI/2);
              thetabNum += 1;
              
-//             //������
-//             imageCorrectGrayBitmap = rotateBitmap(grayBitmap,(float)(thetabSum/thetabNum*180/Math.PI));
-////             imageCorrectGrayBitmap = rotateBitmap(grayBitmap,(float)(Math.PI/2));
-//             imageOTUSSBitmap = imageCorrectGrayBitmap;
-//        	
-////             mDrawIV.setImageBitmap(imageOTUSSBitmap);
-////             savePhotos(imageOTUSSBitmap);
+             
+             imageCorrectGrayBitmap = rotateBitmap(grayBitmap,(float)(thetabSum/thetabNum*180/Math.PI));//角度
+//             imageCorrectGrayBitmap = rotateBitmap(grayBitmap,(float)(90));
+        	
+             mDrawIV.setImageBitmap(imageCorrectGrayBitmap);
+             savePhotos(imageCorrectGrayBitmap);
 //             Utils.bitmapToMat(imageOTUSSBitmap, OTUSSMat);
              
              double rowStep = 15.0;
@@ -668,49 +668,95 @@ public class CameraActivity extends Activity implements
 	            	  Imgproc.threshold(grayMat.rowRange((int)(sLength*(i-1)), (int)(sLength*i)), grayMat.rowRange((int)(sLength*(i-1)), (int)(sLength*i)), 0, 255, Imgproc.THRESH_BINARY|Imgproc.THRESH_OTSU);
             	  }
              
-              //特殊大津法
-              newotsuBitmap = Bitmap.createBitmap(grayBitmap);
-              Utils.matToBitmap(grayMat, newotsuBitmap);
-              mDrawIV.setImageBitmap(newotsuBitmap);
-              savePhotos(newotsuBitmap);
-               
-             
-        	 results = new Intent(this, ResultsActivity.class);
-        	 results.putExtra("IMAGE_PATH", jpegName);
-        	 results.putExtra("RESULT_PATH", resultUrl);
-        	 startActivity(results);
+//              //特殊大津法
+//              newotsuBitmap = Bitmap.createBitmap(grayBitmap);
+//              Utils.matToBitmap(grayMat, newotsuBitmap);
+//              mDrawIV.setImageBitmap(newotsuBitmap);
+//              savePhotos(newotsuBitmap);
+//               
+//             
+//        	 results = new Intent(this, ResultsActivity.class);
+//        	 results.putExtra("IMAGE_PATH", jpegName);
+//        	 results.putExtra("RESULT_PATH", resultUrl);
+//        	 startActivity(results);
 			
 		}
 		
+		 private org.opencv.core.Size frameSize;
 		
-		public  Bitmap rotateBitmap(Bitmap bitmap, float angle) {
+		public  Bitmap rotateBitmap(Bitmap bitmap, final float angle) {
 			System.out.println("angle :"+ angle);
-            Matrix matrix = new Matrix();
-//            jangle = (float)(angle / Math.PI  * 180);
-//            System.out.println("jangle :"+ jangle);
-            double w = bitmap.getWidth();
-            double h = bitmap.getHeight();
-            double rangle = Math.toRadians(angle);//�Ƕ�ת���ɻ���
-           
-			double nw = (Math.abs(Math.sin(rangle)*h) + Math.abs(Math.cos(rangle)*w));
-			double nh = (Math.abs(Math.cos(rangle)*h) + Math.abs(Math.sin(rangle)*w));
-			double x = (nw-w)*0.5;//ȷ��ԭ�����  
-		    double y = (nh-h)*0.5;  
-            matrix.postRotate(angle, (float) nw / 2, (float) nh / 2);
-            matrix.postTranslate((float)x, (float) y);
-            Bitmap newBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),
-                            bitmap.getHeight(), matrix, true);
-            return newBitmap;
-    }
+			 if ((int)angle % 360 == 0) { 
+			        return bitmap; 
+			    } 
+			Mat mat_bmp = new Mat();
+			 Utils.bitmapToMat(bitmap, mat_bmp);
+			            // 计算旋转后图像的宽高 
+			            double radians = Math.toRadians((double)angle); 
+			            System.out.println("radians  "+radians);
+			            double sin = Math.abs(Math.sin(radians)); 
+			            double cos = Math.abs(Math.cos(radians)); 
+			            int width = mat_bmp.width(); 
+			            int height = mat_bmp.height(); 
+			            int newWidth = (int) (width * cos + height * sin); 
+			            int newHeight = (int) (width * sin + height * cos); 
+			            // 能把原图像和旋转后图像同时放入的外框 
+			            int frameWidth = Math.max(width, newWidth); 
+			            int frameHeight = Math.max(height, newHeight); 
+			            frameSize = new org.opencv.core.Size(frameWidth, frameHeight); 
+			            Mat mat_frame = new Mat(); 
+			            mat_frame.create(frameSize, mat_bmp.type());
+			            // 将原图像copy进外框 
+			            int offsetX = (frameWidth - width) / 2; 
+			            int offsetY = (frameHeight - height) / 2; 
+			            Mat mat_frame_submat = mat_frame.submat(offsetY, offsetY + height, offsetX, offsetX 
+			                    + width); 
+			            mat_bmp.copyTo(mat_frame_submat); 
+			            // 旋转外框 
+			            Point center = new Point(frameWidth / 2, frameHeight / 2); 
+			            Mat mat_rot = Imgproc.getRotationMatrix2D(center, angle, 1.0); 
+			            Mat mat_res = new Mat(); // result 
+			            Imgproc.warpAffine(mat_frame, mat_res, mat_rot, frameSize, Imgproc.INTER_LINEAR, 
+			                    Imgproc.BORDER_CONSTANT, Scalar.all(0)); 
+			            // 从旋转后的外框获取新图像 
+			            offsetX = (frameWidth - newWidth) / 2; 
+			            offsetY = (frameHeight - newHeight) / 2; 
+			            Mat mat_res_submat = mat_res.submat(offsetY, offsetY + newHeight, offsetX, offsetX 
+			                    + newWidth); 
+			            Utils.matToBitmap(mat_res_submat, bitmap);
+			            return bitmap; 
+		}		        
+			   
+			
+			
+//            Matrix matrix = new Matrix();
+////            jangle = (float)(angle / Math.PI  * 180);
+////            System.out.println("jangle :"+ jangle);
+//            double w = bitmap.getWidth();
+//            double h = bitmap.getHeight();
+//            double rangle = Math.toRadians(angle);//�Ƕ�ת���ɻ���
+//           
+//			double nw = (Math.abs(Math.sin(rangle)*h) + Math.abs(Math.cos(rangle)*w));
+//			double nh = (Math.abs(Math.cos(rangle)*h) + Math.abs(Math.sin(rangle)*w));
+//			double x = (nw-w)*0.5;//ȷ��ԭ�����  
+//		    double y = (nh-h)*0.5;  
+//            matrix.postRotate(angle, (float) nw / 2, (float) nh / 2);
+//            matrix.postTranslate((float)x, (float) y);
+//            Bitmap newBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),
+//                            bitmap.getHeight(), matrix, true);
+//            return newBitmap;
+//    }
 //		public double rotate_about_center(Bitmap bitmap,double angle,double scale){
 //			Mat bitmapMat = new Mat(); 
+//			Mat desMat = new Mat();
 //			Bitmap rotatedBitmap;
+//			 Utils.bitmapToMat(bitmap, bitmapMat);
 //			double w = bitmap.getWidth();
 //			double h = bitmap.getHeight();
-//			double rangle = Math.toRadians(angle);//�Ƕ�ת���ɻ���
+//			double rangle = Math.toRadians(angle);//
 //			double nw = (Math.abs(Math.sin(rangle)*h) + Math.abs(Math.cos(rangle)*w))*scale;
 //			double nh = (Math.abs(Math.cos(rangle)*h) + Math.abs(Math.sin(rangle)*w))*scale;
-//			double x = (nw-w)*0.5;//ȷ��ԭ�����  
+//			double x = (nw-w)*0.5;//
 //		    double y = (nh-h)*0.5;  
 //			Point center = new Point((nw*0.5), (nh*0.5));
 //			Mat rot_mat = Imgproc.getRotationMatrix2D(center, angle, scale);
@@ -719,10 +765,10 @@ public class CameraActivity extends Activity implements
 //
 //			A.fromArray(x,y,0);
 //			 rot_mat.dot(A);
-//			
+//			org.opencv.core.Size s = bitmapMat.size();
 //			//Ceiling������ȡ��  
-//			return Imgproc.warpAffine(bitmapMat, rot_mat, M, Imgproc.INTER_LANCZOS4);;
-//			
+//			Imgproc.warpAffine(bitmapMat, bitmapMat, rot_mat, s, Imgproc.INTER_LANCZOS4);
+//			return 0;
 //		}
 		
 		private Camera.Size cs;
