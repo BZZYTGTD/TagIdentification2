@@ -23,8 +23,8 @@ JNIEXPORT jint JNICALL Java_com_example_tagidentification_ResultsActivity_proces
 
 
 
-/*-----------������---------------*/
-//Ӫ��ɷֱ�ṹ��
+/*-----------变量定义---------------*/
+//营养成分表结构体
 struct fromContent{
     char *elementsName; //项目
     char *chineseUnit;  //中文单位
@@ -205,7 +205,9 @@ void printfFromContent(void)
 
 	for ( ; i < contentNum; i++){
 		//printf("%s: %.2f%s(%s)\n", fromContent[i].elementsName, fromContent[i].content, fromContent[i].chineseUnit, fromContent[i].englishUnit);
-		fprintf(fDone, "%s: %.2f%s(%s)\n", fromContent[i].elementsName, fromContent[i].content, fromContent[i].chineseUnit, fromContent[i].englishUnit);
+		if (fromContent[i].content > 0){
+			fprintf(fDone, "%s: %.2f%s(%s)\n", fromContent[i].elementsName, fromContent[i].content, fromContent[i].chineseUnit, fromContent[i].englishUnit);
+		}
 	}
 //	fclose(fDone);
 }

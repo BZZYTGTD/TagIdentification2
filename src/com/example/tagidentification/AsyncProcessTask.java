@@ -60,11 +60,11 @@ public class AsyncProcessTask extends AsyncTask<String, String, Boolean> {
 			// Name of application you created
 //			restClient.applicationId = "<your app_id>";
 			
-			restClient.applicationId = "lllofapp";
+			restClient.applicationId = "text_extraction";
 			// You should get e-mail from ABBYY Cloud OCR SDK service with the application password
 //			restClient.password = "<your app_password>";
 			
-			restClient.password = "laJaZehaorFa6FaOKaeMxmoz";
+			restClient.password = "JhtJtFaoN1vRTjwNSllr4i8t";
 			// Obtain installation id when running the application for the first time
 			SharedPreferences settings = activity.getPreferences(Activity.MODE_PRIVATE);
 			String instIdName = "installationId";

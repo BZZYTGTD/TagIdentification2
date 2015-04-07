@@ -22,7 +22,7 @@ import android.widget.ImageView;
 	    Paint paint = new Paint();  
 	    {  
 	        paint.setAntiAlias(true);  
-	        paint.setColor(Color.WHITE);  
+	        paint.setColor(Color.GREEN);  
 	        paint.setStyle(Style.STROKE);  
 	        paint.setStrokeWidth(2.5f);//线宽
 	        paint.setAlpha(255);  //透明

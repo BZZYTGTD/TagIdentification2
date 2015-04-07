@@ -657,14 +657,14 @@ public class CameraActivity extends Activity implements
 ////             savePhotos(imageOTUSSBitmap);
 //             Utils.bitmapToMat(imageOTUSSBitmap, OTUSSMat);
              
-             double rowStep = 10.0;
+             double rowStep = 15.0;
             
              org.opencv.core.Size size;
              size =  grayMat.size();
              System.out.println("size :"+size+"size.height:"+size.height);//c*r 221*124
-              double sLength = size.height/15;
+              double sLength = size.height/rowStep;
               int i;
-              for(i = 1; i <= 15; i++){
+              for(i = 1; i <= rowStep; i++){
 	            	  Imgproc.threshold(grayMat.rowRange((int)(sLength*(i-1)), (int)(sLength*i)), grayMat.rowRange((int)(sLength*(i-1)), (int)(sLength*i)), 0, 255, Imgproc.THRESH_BINARY|Imgproc.THRESH_OTSU);
             	  }
              
