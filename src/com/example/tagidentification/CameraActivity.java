@@ -263,11 +263,8 @@ public class CameraActivity extends Activity implements
 		//Remove output file
 				deleteFile(resultUrl);
 				mBitmap = BitmapFactory.decodeFile(jpegName);
-				processPhotos(mBitmap);
-		        Intent results = new Intent( this, ResultsActivity.class);
-		    	results.putExtra("IMAGE_PATH", jpegName);
-		    	results.putExtra("RESULT_PATH", resultUrl);
-		    	startActivity(results);
+				processPhotos(mBitmap);//处理函数之后已经传过去结果了
+			
 	}
 
 
@@ -677,7 +674,7 @@ public class CameraActivity extends Activity implements
               newotsuBitmap = Bitmap.createBitmap(grayBitmap);
               Utils.matToBitmap(grayMat, newotsuBitmap);
               mDrawIV.setImageBitmap(newotsuBitmap);
-              savePhotos(newotsuBitmap);
+//              savePhotos(newotsuBitmap);
                
              
         	 results = new Intent(this, ResultsActivity.class);
@@ -761,7 +758,7 @@ public class CameraActivity extends Activity implements
  	          List<Camera.Size> sizes = params.getSupportedPreviewSizes(); 
  	          cs = sizes.get(1); 
  	        params.setPreviewSize(cs.width, cs.height);//800*600
- 	           System.out.println("cs.width"+ cs.width+ "cs.height"+ cs.height);
+// 	           System.out.println("cs.width"+ cs.width+ "cs.height"+ cs.height);
  	           
 			 params.setJpegQuality(100);// ������Ƭ����
 			 params.setRotation(90);  
