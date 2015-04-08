@@ -775,10 +775,10 @@ public class CameraActivity extends Activity implements
 			
  	           params.setPictureFormat(PixelFormat.JPEG);  
 				 
-// 	          params.setPictureSize(800, 600); 
- 	          List<Camera.Size> sizes = params.getSupportedPreviewSizes(); 
- 	          cs = sizes.get(1); 
- 	        params.setPreviewSize(cs.width, cs.height);//800*600
+ 	          params.setPictureSize(800, 600); 
+// 	          List<Camera.Size> sizes = params.getSupportedPreviewSizes(); 
+// 	          cs = sizes.get(1); 
+// 	        params.setPreviewSize(cs.width, cs.height);//800*600
 // 	           System.out.println("cs.width"+ cs.width+ "cs.height"+ cs.height);
  	           
 			 params.setJpegQuality(100);// ������Ƭ����
