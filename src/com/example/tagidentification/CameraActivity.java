@@ -45,6 +45,7 @@ import android.hardware.Camera.AutoFocusCallback;
 import android.hardware.Camera.CameraInfo;
 import android.hardware.Camera.PictureCallback;
 import android.hardware.Camera.Size;
+import android.media.ExifInterface;
 import android.media.MediaRecorder;
 import android.media.MediaScannerConnection;
 import android.media.MediaScannerConnection.MediaScannerConnectionClient;
@@ -431,6 +432,8 @@ public class CameraActivity extends Activity implements
 	
 	private  String jpegName;
 	private String savePath;
+	private String Exposure_Time  ;//曝光时间
+	private String FNumber ;//光圈
 	//save photos 
 	public void savePhotos(Bitmap bm){  
 
@@ -462,7 +465,19 @@ public class CameraActivity extends Activity implements
             Log.i(TAG, "Photos save  failed!");  
             e.printStackTrace();  
         }  
-        
+        try {
+			ExifInterface exif = new ExifInterface(jpegName);
+			exif.setAttribute(ExifInterface.TAG_APERTURE,FNumber);
+			exif.setAttribute(ExifInterface.TAG_EXPOSURE_TIME,Exposure_Time);
+			
+			FNumber = exif.getAttribute(ExifInterface.TAG_APERTURE);
+			Exposure_Time = exif.getAttribute(ExifInterface.TAG_EXPOSURE_TIME);
+			System.out.println("FNumber : "+FNumber+"Exposure_Time :" + Exposure_Time);
+			
+        } catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         Uri localUri = Uri.fromFile(folder);
 
         Intent localIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, localUri);
@@ -477,6 +492,8 @@ public class CameraActivity extends Activity implements
 		bm = BitmapFactory.decodeFile(readPath); 
 		return bm;
 		}
+	
+	
 	/** Create a file Uri for saving an image or video */
 //	private static Uri getOutputMediaFileUri(int type){
 //	      return Uri.fromFile(getOutputMediaFile(type));
@@ -796,9 +813,16 @@ public class CameraActivity extends Activity implements
 			 if (null != mCamera)
 	         {  
 				 params = mCamera.getParameters();
-			
- 	           params.setPictureFormat(PixelFormat.JPEG);  
-				 
+//				 if(params.isAutoExposureLockSupported()){
+//					 params.getAutoExposureLock() ;
+//				 }
+			System.out.println("params.getExposureCompensation() "+
+					params.getExposureCompensation() +  
+					"parameters.getExposureCompensationStep()"+ 
+					params.getExposureCompensationStep()+"params.getA params.getAutoExposureLock()"+ 
+					params.getAutoExposureLock());//曝光补偿为0，步长为0.5，getAutoExposureLock为false.
+  
+			params.setPictureFormat(PixelFormat.JPEG);  
  	          params.setPreviewSize(800, 600); 
 // 	          List<Camera.Size> sizes = params.getSupportedPreviewSizes(); 
 // 	          cs = sizes.get(1); 
