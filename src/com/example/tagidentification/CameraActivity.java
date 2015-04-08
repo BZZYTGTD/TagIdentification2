@@ -404,8 +404,16 @@ public class CameraActivity extends Activity implements
 //         Utils.matToBitmap(rotaBitmapMat, sizeBitmap);
 
           //     旋转之后3264*2448. 到2448 *3264
-     // System.out.println("rotaBitmap.getWidth() :"+ rotaBitmap.getWidth()+"rotaBitmap.getHeight()"+rotaBitmap.getHeight());
-          sizeBitmap = Bitmap.createBitmap(rotaBitmap, 0,0,rotaBitmap.getWidth(), rotaBitmap.getWidth());  
+      System.out.println("rotaBitmap.getWidth() :"+ rotaBitmap.getWidth()+"rotaBitmap.getHeight()"+rotaBitmap.getHeight());
+      int width,height;
+      if(rotaBitmap.getWidth() > rotaBitmap.getHeight())    {
+    	  width = rotaBitmap.getHeight();
+    	  height = rotaBitmap.getHeight();
+      }else{
+    	  width = rotaBitmap.getWidth();
+    	  height = rotaBitmap.getWidth();
+      }
+      sizeBitmap = Bitmap.createBitmap(rotaBitmap, 0,0,width, height);  
 	     //  System.out.println("sizeBitmap.getWidth()"+sizeBitmap.getWidth()+"sizeBitmap.getHeight()"+sizeBitmap.getHeight());
          if(null != sizeBitmap)  {
 	        		 savePhotos(sizeBitmap);
@@ -711,7 +719,7 @@ public class CameraActivity extends Activity implements
               newotsuBitmap = Bitmap.createBitmap(grayBitmap);
               Utils.matToBitmap(grayMat, newotsuBitmap);
 //              mDrawIV.setImageBitmap(newotsuBitmap);
-              savePhotos(newotsuBitmap);
+//              savePhotos(newotsuBitmap);
                
 //             
         	 results = new Intent(this, ResultsActivity.class);
