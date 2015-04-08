@@ -249,21 +249,31 @@ public class CameraActivity extends Activity implements
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		// TODO Auto-generated method stub
 		super.onActivityResult(requestCode, resultCode, data);
+		if (resultCode != Activity.RESULT_OK)
+			return;
 		switch (requestCode) {
-		case SELECT_FILE: {
-			Uri imageUri = data.getData();
-
-			String[] projection = { MediaStore.Images.Media.DATA };
-			Cursor cur = managedQuery(imageUri, projection, null, null, null);
-			cur.moveToFirst();
-			jpegName = cur.getString(cur.getColumnIndex(MediaStore.Images.Media.DATA));
-			}
-			break;
+			case SELECT_FILE: 
+				if(data.getData()!=null){
+					Uri imageUri = data.getData();
+		
+					String[] projection = { MediaStore.Images.Media.DATA };
+					Cursor cur = managedQuery(imageUri, projection, null, null, null);
+					cur.moveToFirst();
+					jpegName = cur.getString(cur.getColumnIndex(MediaStore.Images.Media.DATA));
+					
+					//Remove output file
+					deleteFile(resultUrl);
+					mBitmap = BitmapFactory.decodeFile(jpegName);
+					processPhotos(mBitmap);//处理函数之后已经传过去结果了
+					}else{
+						Log.i(TAG, "Select None!");
+						
+					}
+				break;
+				default:
+					break;
 		}
-		//Remove output file
-				deleteFile(resultUrl);
-				mBitmap = BitmapFactory.decodeFile(jpegName);
-				processPhotos(mBitmap);//处理函数之后已经传过去结果了
+		
 			
 	}
 
@@ -821,7 +831,7 @@ public class CameraActivity extends Activity implements
        	         params = mCamera.getParameters();
        	         params.setPictureFormat(PixelFormat.JPEG);  
 				 
-//       	         params.setPictureSize(800, 600);   
+       	         params.setPreviewSize(800, 600);   
 				 params.setJpegQuality(100);// ������Ƭ����
 				 params.setRotation(90);  
 				 mCamera.setParameters(params);
