@@ -444,6 +444,12 @@ public class CameraActivity extends Activity implements
             Log.i(TAG, "Photos save  failed!");  
             e.printStackTrace();  
         }  
+        
+        Uri localUri = Uri.fromFile(folder);
+
+        Intent localIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, localUri);
+
+        sendBroadcast(localIntent);
     }  
 	private String readPath;
 	public Bitmap readPhotos(Bitmap bm){
