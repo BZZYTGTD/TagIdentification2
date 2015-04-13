@@ -23,7 +23,7 @@ int layout result 0x7f030002
 int menu activity_results 0x7f090000
 int menu main 0x7f090001
 int raw willdo 0x7f040000
-int string UpLoading 0x7f070007
+int string Uploading 0x7f070007
 int string action_settings 0x7f070001
 int string app_name 0x7f070000
 int string area_tag_scan 0x7f07000a

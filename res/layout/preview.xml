@@ -13,7 +13,7 @@
       <RelativeLayout
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:gravity="center_vertical|center_horizontal"
+    android:gravity="center_horizontal|center_vertical"
  	android:layout_gravity="center_horizontal|center_vertical"
 
     >
@@ -34,16 +34,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
        android:layout_centerHorizontal="true"
+      
         android:text="Capture"
         android:layout_below="@id/drawIV"
          />
+   
        <Button
         android:id="@+id/button_UpLoading"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:text="@string/UpLoading"
-        android:layout_below="@id/button_capture"
+        android:text="@string/Uploading"
+      android:layout_below="@id/button_capture"
         />
     
       
