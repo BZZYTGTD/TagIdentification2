@@ -906,25 +906,25 @@ public class CameraActivity extends Activity implements
 			
 			params.setPictureFormat(PixelFormat.JPEG);  
 
-//	          List<Camera.Size> psizes = params.getSupportedPictureSizes(); 
-//	            Camera.Size pcs = (Camera.Size) psizes.get(0); 
-//	            psizeheight = pcs.height; 
-// 	            psizewidth = pcs.width;
-//// 	            params.setPictureSize((int)psizewidth, (int)psizeheight);
-// 	            float n = psizeheight/psizewidth;
-// 	          List<Camera.Size> sizes = params.getSupportedPreviewSizes(); 
-// 	         for (int i = 0; i < sizes.size(); i++) { 
-// 	            Camera.Size cs = (Camera.Size) sizes.get(i); 
-// 	             sizeheight = cs.height; 
-// 	             sizewidth = cs.width; 
-// 	             if(n == (sizeheight/ sizewidth)){
-// 	            	params.setPreviewSize((int)sizewidth, (int)sizeheight);
-// 	            	break;
-// 	             }
-// 	         }
-// 	          cs = sizes.get(1); 
-// 	        params.setPreviewSize(cs.width, cs.height);//800*600
-// 	           System.out.println("cs.width"+ cs.width + "cs.height"+ cs.height);
+	          List<Camera.Size> psizes = params.getSupportedPictureSizes(); 
+	            Camera.Size pcs = (Camera.Size) psizes.get(0); 
+	            psizeheight = pcs.height; 
+ 	            psizewidth = pcs.width;
+// 	            params.setPictureSize((int)psizewidth, (int)psizeheight);
+ 	            float n = psizeheight/psizewidth;
+ 	          List<Camera.Size> sizes = params.getSupportedPreviewSizes(); 
+ 	         for (int i = 0; i < sizes.size(); i++) { 
+ 	            Camera.Size cs = (Camera.Size) sizes.get(i); 
+ 	             sizeheight = cs.height; 
+ 	             sizewidth = cs.width; 
+ 	             if(n == (sizeheight/ sizewidth)){
+ 	            	params.setPreviewSize((int)sizewidth, (int)sizeheight);
+ 	            	break;
+ 	             }
+ 	         }
+ 	          cs = sizes.get(1); 
+ 	        params.setPreviewSize(cs.width, cs.height);//800*600
+ 	           System.out.println("cs.width"+ cs.width + "cs.height"+ cs.height);
 
 			params.setJpegQuality(100);// ������Ƭ����
 			 params.setRotation(90);  
@@ -960,22 +960,22 @@ public class CameraActivity extends Activity implements
        	         params = mCamera.getParameters();
        	         params.setPictureFormat(PixelFormat.JPEG);  
 //				 params.setPreviewSize(640, 480);
-//       	      List<Camera.Size> psizes = params.getSupportedPictureSizes(); 
-//	            Camera.Size pcs = (Camera.Size) psizes.get(0); 
-//	            psizeheight = pcs.height; 
-//	            psizewidth = pcs.width;
-////	            params.setPictureSize((int)psizewidth, (int)psizeheight);
-//	            float n = psizeheight/psizewidth;
-//	          List<Camera.Size> sizes = params.getSupportedPreviewSizes(); 
-//	         for (int i = 0; i < sizes.size(); i++) { 
-//	            Camera.Size cs = (Camera.Size) sizes.get(i); 
-//	             sizeheight = cs.height; 
-//	             sizewidth = cs.width; 
-//	             if(n == (sizeheight/ sizewidth)){
-//	            	params.setPreviewSize((int)sizewidth, (int)sizeheight);
-//	            	break;
-//	             }
-//	         }
+       	      List<Camera.Size> psizes = params.getSupportedPictureSizes(); 
+	            Camera.Size pcs = (Camera.Size) psizes.get(0); 
+	            psizeheight = pcs.height; 
+	            psizewidth = pcs.width;
+//	            params.setPictureSize((int)psizewidth, (int)psizeheight);
+	            float n = psizeheight/psizewidth;
+	          List<Camera.Size> sizes = params.getSupportedPreviewSizes(); 
+	         for (int i = 0; i < sizes.size(); i++) { 
+	            Camera.Size cs = (Camera.Size) sizes.get(i); 
+	             sizeheight = cs.height; 
+	             sizewidth = cs.width; 
+	             if(n == (sizeheight/ sizewidth)){
+	            	params.setPreviewSize((int)sizewidth, (int)sizeheight);
+	            	break;
+	             }
+	         }
 				 params.setJpegQuality(100);// ������Ƭ����
 				 params.setRotation(90);  
 				 mCamera.setParameters(params);
