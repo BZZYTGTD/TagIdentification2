@@ -466,9 +466,9 @@ public class CameraActivity extends Activity implements
             e.printStackTrace();  
         }  
         try {
-			ExifInterface exif = new ExifInterface(jpegName);
-			exif.setAttribute(ExifInterface.TAG_APERTURE,FNumber);
-			exif.setAttribute(ExifInterface.TAG_EXPOSURE_TIME,Exposure_Time);
+			ExifInterface exif = new ExifInterface("/mnt/sdcard/DCIM/123.jpg");
+//			exif.setAttribute(ExifInterface.TAG_APERTURE,FNumber);
+//			exif.setAttribute(ExifInterface.TAG_EXPOSURE_TIME,Exposure_Time);
 			
 			FNumber = exif.getAttribute(ExifInterface.TAG_APERTURE);
 			Exposure_Time = exif.getAttribute(ExifInterface.TAG_EXPOSURE_TIME);
@@ -813,15 +813,26 @@ public class CameraActivity extends Activity implements
 			 if (null != mCamera)
 	         {  
 				 params = mCamera.getParameters();
-//				 if(params.isAutoExposureLockSupported()){
-//					 params.getAutoExposureLock() ;
-//				 }
-			System.out.println("params.getExposureCompensation() "+
-					params.getExposureCompensation() +  
-					"parameters.getExposureCompensationStep()"+ 
-					params.getExposureCompensationStep()+"params.getA params.getAutoExposureLock()"+ 
-					params.getAutoExposureLock());//曝光补偿为0，步长为0.5，getAutoExposureLock为false.
-  
+				 //只有两种场景模式“text”,"auto"
+//				 List<String> supportSceneMode = params.getSupportedSceneModes();    
+//				 for (int i = 0; i < supportSceneMode.size(); i++) {  
+//				     System.out.println( "supportSceneMode : " + i + " : " + supportSceneMode.get(i));  
+//				 } 
+				 //不知道是什么模式。。。文本模式？
+//				 params.setSceneMode("text");
+				 
+//			System.out.println("params.getExposureCompensation() "+
+//					params.getExposureCompensation() +  
+//					"parameters.getExposureCompensationStep()"+ 
+//					params.getExposureCompensationStep()+" params.getAutoExposureLock()"+ 
+//					params.getAutoExposureLock()+
+//					"params.getMaxExposureCompensation() : "+ params.getMaxExposureCompensation()
+//					+"params.getMminExposureCompensation() : "+ params.getMinExposureCompensation()
+//					);//曝光补偿为0，步长为0.5，AutoExposureLock为false,最大补偿为4，最小为-4.
+//			params.setAutoExposureLock(true);//true的话就是自动调节曝光补偿
+//			params.setExposureCompensation(1);
+			
+			
 			params.setPictureFormat(PixelFormat.JPEG);  
  	          params.setPreviewSize(800, 600); 
 // 	          List<Camera.Size> sizes = params.getSupportedPreviewSizes(); 
