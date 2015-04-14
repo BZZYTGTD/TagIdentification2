@@ -24,7 +24,7 @@ import android.widget.ImageView;
 	        paint.setAntiAlias(true);  
 	        paint.setColor(Color.GREEN);  
 	        paint.setStyle(Style.STROKE);  
-	        paint.setStrokeWidth(2.5f);//线宽
+	        paint.setStrokeWidth(5f);//线宽
 	        paint.setAlpha(255);  //透明
 	    };  
 	      
