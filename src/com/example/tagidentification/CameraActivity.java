@@ -423,6 +423,7 @@ public class CameraActivity extends Activity implements
             bundle.putByteArray("bytes", data); //将图片字节数据保存在bundle当中，实现数据交换  
             File fileFolder = new File(Environment.getExternalStorageDirectory()  
                     , "image.jpg");  
+            System.out.println("fileFolder :"+ fileFolder);
             if (!fileFolder.exists()) { // 如果目录不存在，则创建一个名为"finger"的目录  
                 fileFolder.mkdir();  
             }  
@@ -440,10 +441,17 @@ public class CameraActivity extends Activity implements
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+//			bitmap = BitmapFactory.decodeFile("fileFolder");
+//			 mCamera.stopPreview();  
+			
 			bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
       	  System.out.println("bitmap.getWidth() + "+bitmap.getWidth()+"bitmap.getHeight():"+bitmap.getHeight());
-      	mCamera.stopPreview();  
-      	
+//      	  mCamera.stopPreview();  
+//	      	List<Camera.Size> psizes = params.getSupportedPictureSizes(); 
+//	        Camera.Size pcs = (Camera.Size) psizes.get(0); 
+//	        psizeheight = pcs.height; 
+//	        psizewidth = pcs.width;
+
       	
 	    	//480*640还是不行
 //	    	File temFile = new File(Environment.getExternalStorageDirectory(),"image.jpg");  
@@ -475,19 +483,33 @@ public class CameraActivity extends Activity implements
 //	        	mCamera.stopPreview();  
 ////                isPreview = false;  
 //            }  
+			
+			//解决显示旋转问题
       	if(bitmap.getWidth()>bitmap.getHeight()){
 	        Matrix matrix = new Matrix();  
             matrix.postRotate((float)90.0);  
             rotaBitmap = Bitmap.createBitmap(bitmap, 
             		0, 0, bitmap.getWidth(), bitmap.getHeight(), 
             		matrix, false);
+            
       	}else{
       		 Matrix matrix = new Matrix(); 
       		rotaBitmap = Bitmap.createBitmap(bitmap, 
             		0, 0, bitmap.getWidth(), bitmap.getHeight(), 
             		matrix, false);
       	}
-            //下面也可以实现截取图片的一部分为正方形区域
+      	
+        //     旋转之后3264*2448. 到2448 *3264
+        System.out.println("rotaBitmap.getWidth() :"+ rotaBitmap.getWidth()+"rotaBitmap.getHeight()"+rotaBitmap.getHeight());
+        int width,height;
+        if(rotaBitmap.getWidth() > rotaBitmap.getHeight())    {
+      	  width = rotaBitmap.getHeight();
+      	  height = rotaBitmap.getHeight();
+        }else{
+      	  width = rotaBitmap.getWidth();
+      	  height = rotaBitmap.getWidth();
+        }
+//            //下面也可以实现截取图片的一部分为正方形区域
 //          Mat rotaBitmapMat = new Mat();
 //          Mat newrotaBitmapMat = new Mat(); 
 //          Utils.bitmapToMat(rotaBitmap, rotaBitmapMat);
@@ -496,31 +518,23 @@ public class CameraActivity extends Activity implements
 //       
 //          rotaBitmapMat = rotaBitmapMat.rowRange(0, (int)size.width);
 //           System.out.println("rotaBitmapMat.size"+rotaBitmapMat.size());
-//           sizeBitmap = Bitmap.createBitmap(bitmap, 0,0, bitmap.getHeight(),  bitmap.getHeight());
+//           sizeBitmap = Bitmap.createBitmap(bitmap, 0,0, width,  height);
 //         Utils.matToBitmap(rotaBitmapMat, sizeBitmap);
 
-          //     旋转之后3264*2448. 到2448 *3264
-      System.out.println("rotaBitmap.getWidth() :"+ rotaBitmap.getWidth()+"rotaBitmap.getHeight()"+rotaBitmap.getHeight());
-      int width,height;
-      if(rotaBitmap.getWidth() > rotaBitmap.getHeight())    {
-    	  width = rotaBitmap.getHeight();
-    	  height = rotaBitmap.getHeight();
-      }else{
-    	  width = rotaBitmap.getWidth();
-    	  height = rotaBitmap.getWidth();
-      }
-      sizeBitmap = Bitmap.createBitmap(rotaBitmap, 0,0,width, height);  
+       
+        sizeBitmap = Bitmap.createBitmap(rotaBitmap, 0,0,width, height);  
 	     //  System.out.println("sizeBitmap.getWidth()"+sizeBitmap.getWidth()+"sizeBitmap.getHeight()"+sizeBitmap.getHeight());
          if(null != sizeBitmap)  {
 	        		 savePhotos(sizeBitmap);
 	         }
-   		
+         
+         	bitmap.recycle();//回收bitmap
+	        rotaBitmap.recycle();
+	        sizeBitmap.recycle();
 		    // 重新预览
 	        mCamera.stopPreview();
 	        mCamera.startPreview();
-	        bitmap.recycle();//回收bitmap
-	        rotaBitmap.recycle();
-	        sizeBitmap.recycle();
+	       
 	    }
 
 	};
@@ -562,19 +576,12 @@ public class CameraActivity extends Activity implements
             Log.i(TAG, "Photos save  failed!");  
             e.printStackTrace();  
         }  
-//        try {
-//			ExifInterface exif = new ExifInterface("/mnt/sdcard/DCIM/123.jpg");
-////			exif.setAttribute(ExifInterface.TAG_APERTURE,FNumber);
-////			exif.setAttribute(ExifInterface.TAG_EXPOSURE_TIME,Exposure_Time);
-//			
-//			FNumber = exif.getAttribute(ExifInterface.TAG_APERTURE);
-//			Exposure_Time = exif.getAttribute(ExifInterface.TAG_EXPOSURE_TIME);
-//			System.out.println("FNumber : "+FNumber+"Exposure_Time :" + Exposure_Time);
-//			
-//        } catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+        //网上有一个小米手机用的是下面的方法
+        Intent intent = new Intent(
+                Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        Uri uri = Uri.fromFile(folder);
+        intent.setData(uri);
+        sendBroadcast(intent);
         //以下两种都不能及时刷新图库
 //        Uri localUri = Uri.fromFile(folder);
 //
@@ -582,11 +589,11 @@ public class CameraActivity extends Activity implements
 //
 //        sendBroadcast(localIntent);
         //第三种
-//        this.sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.parse("file://" + Environment.getExternalStorageDirectory())));  
+//        sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse(folder.getPath())));  
         //下面语句不行，会死掉
 //        sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED,Uri.fromFile(folder))); 
-        MediaScannerConnection.scanFile(this, new String[]{Environment.getExternalStoragePublicDirectory(
-        		Environment.DIRECTORY_DCIM).getPath() + "/" + "Camera"}, null, null);  
+//        MediaScannerConnection.scanFile(this, new String[]{Environment.getExternalStoragePublicDirectory(
+//        		Environment.DIRECTORY_DCIM).getPath() + "/" + "Camera"}, null, null);  
     }  
 	private String readPath;
 	public Bitmap readPhotos(Bitmap bm){
@@ -736,7 +743,8 @@ public class CameraActivity extends Activity implements
 			// TODO Auto-generated method stub
 			 switch (v.getId()) {
              case R.id.button_capture: //����
-                     mCamera.autoFocus(this);//自动聚焦
+//            	 小米手机这里预览的话会变得模糊
+//                     mCamera.autoFocus(this);//自动聚焦
                      mCamera.takePicture(null, null, mPicture);
                      
                      Toast.makeText(getApplicationContext(), "Yes", Toast.LENGTH_SHORT).show();
@@ -948,7 +956,7 @@ public class CameraActivity extends Activity implements
 	            Camera.Size pcs = (Camera.Size) psizes.get(0); 
 	            psizeheight = pcs.height; 
  	            psizewidth = pcs.width;
-// 	            params.setPictureSize((int)psizewidth, (int)psizeheight);
+ 	            params.setPictureSize((int)psizewidth, (int)psizeheight);
  	            float n = psizeheight/psizewidth;
  	          List<Camera.Size> sizes = params.getSupportedPreviewSizes(); 
  	         for (int i = 0; i < sizes.size(); i++) { 
@@ -1002,7 +1010,7 @@ public class CameraActivity extends Activity implements
 	            Camera.Size pcs = (Camera.Size) psizes.get(0); 
 	            psizeheight = pcs.height; 
 	            psizewidth = pcs.width;
-//	            params.setPictureSize((int)psizewidth, (int)psizeheight);
+	            params.setPictureSize((int)psizewidth, (int)psizeheight);
 	            float n = psizeheight/psizewidth;
 	          List<Camera.Size> sizes = params.getSupportedPreviewSizes(); 
 	         for (int i = 0; i < sizes.size(); i++) { 
