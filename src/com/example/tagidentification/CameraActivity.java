@@ -413,23 +413,51 @@ public class CameraActivity extends Activity implements
 		
 		public Bitmap sizeBitmap;
 		public Bitmap rotaBitmap;
-		
+		Bundle bundle = null; 
 	private PictureCallback mPicture = new PictureCallback() {
 
 	    @Override
 	    public void onPictureTaken(byte[] data, Camera camera) {
-	    	//480*640还是不行
-	    	File temFile = new File(Environment.getExternalStorageDirectory(),"image.jpg");  
 	    	
-	    	 try {
-	             FileOutputStream fos = new FileOutputStream(temFile);
-	             fos.write(data);
-	             fos.close();
-	         } catch (FileNotFoundException e) {
-	             Log.d(TAG, "File not found: " + e.getMessage());
-	         } catch (IOException e) {
-	             Log.d(TAG, "Error accessing file: " + e.getMessage());
-	         }
+	    	bundle = new Bundle();  
+            bundle.putByteArray("bytes", data); //将图片字节数据保存在bundle当中，实现数据交换  
+            File fileFolder = new File(Environment.getExternalStorageDirectory()  
+                    , "image.jpg");  
+            if (!fileFolder.exists()) { // 如果目录不存在，则创建一个名为"finger"的目录  
+                fileFolder.mkdir();  
+            }  
+            File jpgFile = new File(fileFolder, "image.jpg");  
+            FileOutputStream outputStream;
+			try {
+				outputStream = new FileOutputStream(jpgFile);
+				outputStream.write(data); // 写入sd卡中  
+	            outputStream.close(); // 关闭输出流  
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} // 文件输出流  
+			catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+      	  System.out.println("bitmap.getWidth() + "+bitmap.getWidth()+"bitmap.getHeight():"+bitmap.getHeight());
+      	mCamera.stopPreview();  
+      	
+      	
+	    	//480*640还是不行
+//	    	File temFile = new File(Environment.getExternalStorageDirectory(),"image.jpg");  
+//	    	
+//	    	 try {
+//	             FileOutputStream fos = new FileOutputStream(temFile);
+//	             fos.write(data);
+//	             fos.close();
+//	         } catch (FileNotFoundException e) {
+//	             Log.d(TAG, "File not found: " + e.getMessage());
+//	         } catch (IOException e) {
+//	             Log.d(TAG, "Error accessing file: " + e.getMessage());
+//	         }
+	    	
 //	    	bitmap = BitmapFactory.decodeFile(Environment.getExternalStorageDirectory()+"/image.jpg"); 
 //	    	 System.out.println("bitmap.getWidth() + "+bitmap.getWidth()+"bitmap.getHeight():"+bitmap.getHeight());
 //        	mCamera.stopPreview();
@@ -447,12 +475,18 @@ public class CameraActivity extends Activity implements
 //	        	mCamera.stopPreview();  
 ////                isPreview = false;  
 //            }  
-//	        Matrix matrix = new Matrix();  
-//            matrix.postRotate((float)90.0);  
-//            rotaBitmap = Bitmap.createBitmap(bitmap, 
-//            		0, 0, bitmap.getWidth(), bitmap.getHeight(), 
-//            		matrix, false);
-          
+      	if(bitmap.getWidth()>bitmap.getHeight()){
+	        Matrix matrix = new Matrix();  
+            matrix.postRotate((float)90.0);  
+            rotaBitmap = Bitmap.createBitmap(bitmap, 
+            		0, 0, bitmap.getWidth(), bitmap.getHeight(), 
+            		matrix, false);
+      	}else{
+      		 Matrix matrix = new Matrix(); 
+      		rotaBitmap = Bitmap.createBitmap(bitmap, 
+            		0, 0, bitmap.getWidth(), bitmap.getHeight(), 
+            		matrix, false);
+      	}
             //下面也可以实现截取图片的一部分为正方形区域
 //          Mat rotaBitmapMat = new Mat();
 //          Mat newrotaBitmapMat = new Mat(); 
@@ -466,27 +500,27 @@ public class CameraActivity extends Activity implements
 //         Utils.matToBitmap(rotaBitmapMat, sizeBitmap);
 
           //     旋转之后3264*2448. 到2448 *3264
-//      System.out.println("rotaBitmap.getWidth() :"+ rotaBitmap.getWidth()+"rotaBitmap.getHeight()"+rotaBitmap.getHeight());
-//      int width,height;
-//      if(rotaBitmap.getWidth() > rotaBitmap.getHeight())    {
-//    	  width = rotaBitmap.getHeight();
-//    	  height = rotaBitmap.getHeight();
-//      }else{
-//    	  width = rotaBitmap.getWidth();
-//    	  height = rotaBitmap.getWidth();
-//      }
-//      sizeBitmap = Bitmap.createBitmap(rotaBitmap, 0,0,width, height);  
-//	     //  System.out.println("sizeBitmap.getWidth()"+sizeBitmap.getWidth()+"sizeBitmap.getHeight()"+sizeBitmap.getHeight());
-//         if(null != sizeBitmap)  {
-//	        		 savePhotos(sizeBitmap);
-//	         }
-//   		
-//		    // 重新预览
+      System.out.println("rotaBitmap.getWidth() :"+ rotaBitmap.getWidth()+"rotaBitmap.getHeight()"+rotaBitmap.getHeight());
+      int width,height;
+      if(rotaBitmap.getWidth() > rotaBitmap.getHeight())    {
+    	  width = rotaBitmap.getHeight();
+    	  height = rotaBitmap.getHeight();
+      }else{
+    	  width = rotaBitmap.getWidth();
+    	  height = rotaBitmap.getWidth();
+      }
+      sizeBitmap = Bitmap.createBitmap(rotaBitmap, 0,0,width, height);  
+	     //  System.out.println("sizeBitmap.getWidth()"+sizeBitmap.getWidth()+"sizeBitmap.getHeight()"+sizeBitmap.getHeight());
+         if(null != sizeBitmap)  {
+	        		 savePhotos(sizeBitmap);
+	         }
+   		
+		    // 重新预览
 	        mCamera.stopPreview();
 	        mCamera.startPreview();
-//	        bitmap.recycle();//回收bitmap
-//	        rotaBitmap.recycle();
-//	        sizeBitmap.recycle();
+	        bitmap.recycle();//回收bitmap
+	        rotaBitmap.recycle();
+	        sizeBitmap.recycle();
 	    }
 
 	};
@@ -547,6 +581,10 @@ public class CameraActivity extends Activity implements
 //        Intent localIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, localUri);
 //
 //        sendBroadcast(localIntent);
+        //第三种
+//        this.sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.parse("file://" + Environment.getExternalStorageDirectory())));  
+        //下面语句不行，会死掉
+//        sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED,Uri.fromFile(folder))); 
         MediaScannerConnection.scanFile(this, new String[]{Environment.getExternalStoragePublicDirectory(
         		Environment.DIRECTORY_DCIM).getPath() + "/" + "Camera"}, null, null);  
     }  
@@ -922,9 +960,9 @@ public class CameraActivity extends Activity implements
  	            	break;
  	             }
  	         }
- 	          cs = sizes.get(1); 
- 	        params.setPreviewSize(cs.width, cs.height);//800*600
- 	           System.out.println("cs.width"+ cs.width + "cs.height"+ cs.height);
+// 	          cs = sizes.get(1); 
+// 	        params.setPreviewSize(cs.width, cs.height);//800*600
+// 	           System.out.println("cs.width"+ cs.width + "cs.height"+ cs.height);
 
 			params.setJpegQuality(100);// ������Ƭ����
 			 params.setRotation(90);  
