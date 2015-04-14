@@ -33,18 +33,20 @@
              android:id="@+id/drawIV"  
              android:layout_width="wrap_content"  
              android:layout_height="wrap_content" />
-    
-      <Button
+    <LinearLayout
+          android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal|center_vertical"
+    android:orientation="vertical" 
+        android:layout_below="@id/drawIV"
+        >
+        
+        
+       <Button
         android:id="@+id/button_capture"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-         
-      android:layout_centerHorizontal="true"
-      
-     	
-        android:text="Capture"
-        android:layout_below="@id/drawIV"
-         />
+        android:layout_height="wrap_content"      
+        android:text="Capture"         />
       <!-- 	android:layout_centerHorizontal="true"
       	android:layout_centerVertical="true" -->
    
@@ -52,13 +54,13 @@
         android:id="@+id/button_UpLoading"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
         
         android:text="@string/Uploading"
-      android:layout_below="@id/button_capture"
+      
         />
     
-      
+         </LinearLayout>
+       
   
        </RelativeLayout>  
 </LinearLayout>
