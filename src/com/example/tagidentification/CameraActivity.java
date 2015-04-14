@@ -172,8 +172,6 @@ public class CameraActivity extends Activity implements
          
         captureButton = (Button) findViewById(R.id.button_capture);
         uploading = (Button)findViewById(R.id.button_UpLoading);
-//        //button依然透明
-//        captureButton.getBackground().setAlpha(255);
         captureButton.setOnClickListener(this);
         uploading.setOnClickListener(this);
         // 获取相机ID
