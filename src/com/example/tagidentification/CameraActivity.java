@@ -747,7 +747,7 @@ public class CameraActivity extends Activity implements
 //                     mCamera.autoFocus(this);//自动聚焦
                      mCamera.takePicture(null, null, mPicture);
                      
-                     Toast.makeText(getApplicationContext(), "Yes", Toast.LENGTH_SHORT).show();
+                     Toast.makeText(getApplicationContext(), "Please click the UpLoading button", Toast.LENGTH_SHORT).show();
                      
                      break;
              case R.id.camera_preview:
