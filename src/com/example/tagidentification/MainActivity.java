@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.RelativeLayout;
-
+//MainActivity暂时没用到
 public class MainActivity extends Activity {
 	 RelativeLayout soso;
     @Override

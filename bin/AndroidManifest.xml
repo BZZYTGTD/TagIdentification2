@@ -15,7 +15,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.example.tagidentification.MainActivity"
+            android:name="com.example.tagidentification.StartApp"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -28,7 +28,7 @@
              android:label="@string/area_tag_scan" 
             android:name="com.example.tagidentification.CameraActivity"
              />
-          
+          <activity android:name="com.example.tagidentification.FirstSetUpActivity"> </activity>
         <activity
             android:name="com.example.tagidentification.ResultsActivity"
             android:label="@string/title_activity_results" >
