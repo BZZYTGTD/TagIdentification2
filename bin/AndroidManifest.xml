@@ -16,7 +16,7 @@
         android:theme="@style/AppTheme" >
         <activity
             android:name="com.example.tagidentification.StartApp"
-            android:label="@string/app_name" >
+            android:theme="@android:style/Theme.NoTitleBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -25,15 +25,25 @@
         </activity>
         
         <activity 
-             android:label="@string/area_tag_scan" 
+             android:theme= "@android:style/Theme.NoTitleBar"
             android:name="com.example.tagidentification.CameraActivity"
-             />
-          <activity android:name="com.example.tagidentification.FirstSetUpActivity"> </activity>
-        <activity
-            android:name="com.example.tagidentification.ResultsActivity"
-            android:label="@string/title_activity_results" >
+             >
+                          
         </activity>
         
+          <activity android:name="com.example.tagidentification.FirstSetUpActivity"
+             android:theme= "@android:style/Theme.NoTitleBar" >
+              
+               </activity>
+        <activity
+           android:label="@string/title_activity_results"
+            android:name="com.example.tagidentification.ResultsActivity"
+           ><!--  android:label="@string/title_activity_results"  -->
+        </activity>
+        <activity android:name="com.example.tagidentification.MainActivity"
+             android:theme= "@android:style/Theme.NoTitleBar" >
+              
+               </activity>
     </application>
     
 	<uses-permission android:name="android.permission.CAMERA" />

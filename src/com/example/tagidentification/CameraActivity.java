@@ -68,8 +68,10 @@ import android.view.SurfaceHolder.Callback;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 import android.widget.RelativeLayout.LayoutParams;
@@ -92,6 +94,7 @@ public class CameraActivity extends Activity implements
 	public WindowManager wManager;
 	public Display display;
     private int mFocusLeft, mFocusTop, mFocusWidth, mFocusHeight;
+    public static int top ;
     public static final String TAG = "TagIdentification";
 	private static final int TAKE_PICTURE = 1;
 	private static final int SELECT_FILE = 2;
@@ -101,8 +104,12 @@ public class CameraActivity extends Activity implements
     long waitTime = 2000;    
 	long touchTime = 0;  
 	private int checkItem;
-	Button captureButton;
-	Button uploading;
+	ImageButton captureButton;
+	ImageButton uploading;
+	
+	ImageButton PictureFromFile;
+	ImageButton goHome;
+	ImageButton back;
 	private boolean isRecording = false;
 	
 	private Camera.AutoFocusCallback mAutoFocusCallback;
@@ -116,6 +123,7 @@ public class CameraActivity extends Activity implements
 	SurfaceView preview;
 	LinearLayout linearrLayout01;
 	private DrawImageView mDrawIV;
+	private DrawImageView2 mDrawIV2;
 	
 	private final int menu_add = 101;
     private final int menu_help = 103;
@@ -127,11 +135,15 @@ public class CameraActivity extends Activity implements
 	@SuppressLint("WrongCall") @Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		//设置全屏
+//		requestWindowFeature(Window.FEATURE_NO_TITLE);  //无title  
+//		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,  
+//		              WindowManager.LayoutParams.FLAG_FULLSCREEN);  //全屏  
 		setContentView(R.layout.preview);
 		
 		
-//		getActionBar().setTitle("haha");
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+
+//        getActionBar().setDisplayHomeAsUpEnabled(true);
 		//竖屏
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         
@@ -143,9 +155,10 @@ public class CameraActivity extends Activity implements
         mScreenWidth = display.getWidth();//1080
         mFocusTop = mFocusLeft = (mScreenWidth * 3) / 8;
         mFocusWidth = mFocusHeight = mScreenWidth / 4;
+        top = (mScreenHeight-mScreenWidth)/3; 
        
          
-        linearrLayout01 = (LinearLayout)findViewById(R.id.linearLayout01);
+
          preview = (SurfaceView) findViewById(R.id.camera_preview);
 //         //surfaceview预览尺寸：1080*1080
 //         FrameLayout.LayoutParams layoutParams = 
@@ -161,17 +174,29 @@ public class CameraActivity extends Activity implements
          mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);  
          mDrawIV = (com.example.tagidentification.DrawImageView)findViewById(R.id.drawIV);
          LayoutParams params = (LayoutParams) mDrawIV.getLayoutParams();  
-         params.height= mScreenWidth;  
+         params.height= mScreenHeight;  
          params.width = mScreenWidth;  
          mDrawIV.setLayoutParams(params);  
          mDrawIV.onDraw(new Canvas());
+         
+//         mDrawIV2 = (com.example.tagidentification.DrawImageView2)findViewById(R.id.drawIV2);
+//         LayoutParams params2 = (LayoutParams) mDrawIV2.getLayoutParams();  
+//         params2.height= top;  
+//         params2.width = mScreenWidth;  
+//         mDrawIV2.setLayoutParams(params);  
+//         mDrawIV2.onDraw(new Canvas());
 //         mDrawIV.setOnClickListener(this);
          mDraw = new DrawCaptureRect(CameraActivity.this,
         		 mFocusLeft,mFocusTop,mFocusWidth,mFocusHeight);
-         
-         
-        captureButton = (Button) findViewById(R.id.button_capture);
-        uploading = (Button)findViewById(R.id.button_UpLoading);
+         back = (ImageButton) findViewById(R.id.back);
+         PictureFromFile = (ImageButton) findViewById(R.id.PictureFromFile);
+        captureButton = (ImageButton) findViewById(R.id.button_capture);
+        uploading = (ImageButton)findViewById(R.id.button_UpLoading);
+        goHome = (ImageButton)findViewById(R.id.goHome);
+       
+        back.setOnClickListener(this);
+        goHome.setOnClickListener(this);
+        PictureFromFile.setOnClickListener(this);
         captureButton.setOnClickListener(this);
         uploading.setOnClickListener(this);
         // 获取相机ID
@@ -224,6 +249,7 @@ public class CameraActivity extends Activity implements
 //	    menu.findItem(R.id.menu_help).setVisible(true);
 	    menu.add(0, menu_add, 1, "PictureFromFile");
         menu.add(0, menu_help, 1, "Help");
+      
 	    return true;
 	}
 
@@ -255,8 +281,10 @@ public class CameraActivity extends Activity implements
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		// TODO Auto-generated method stub
 		super.onActivityResult(requestCode, resultCode, data);
-		if (resultCode != Activity.RESULT_OK)
+		if (resultCode != Activity.RESULT_OK){
 			return;
+		}
+//			return;
 		switch (requestCode) {
 			case SELECT_FILE: 
 				if(data.getData()!=null){
@@ -747,7 +775,7 @@ public class CameraActivity extends Activity implements
 //                     mCamera.autoFocus(this);//自动聚焦
                      mCamera.takePicture(null, null, mPicture);
                      
-                     Toast.makeText(getApplicationContext(), "Please click the UpLoading button", Toast.LENGTH_SHORT).show();
+                     Toast.makeText(getApplicationContext(), "Please click the Yes button", Toast.LENGTH_SHORT).show();
                      
                      break;
              case R.id.camera_preview:
@@ -758,9 +786,27 @@ public class CameraActivity extends Activity implements
             	 mBitmap = readPhotos(sizeBitmap);
             	 processPhotos(mBitmap);
             	  break;
-            	  //想用来清空
-//             case R.id.drawIV:
-//            	 mDrawIV.setImageBitmap(null);
+             case R.id.PictureFromFile:
+            	 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+ 		    	intent.setType("image/*");
+ 		    	startActivityForResult(intent, SELECT_FILE);
+            	 break;
+             case R.id.goHome:
+            	 Intent mHomeIntent = new Intent(Intent.ACTION_MAIN);  
+            	 mHomeIntent.addCategory(Intent.CATEGORY_HOME);  
+            	 mHomeIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK  
+            	                 | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);  
+            	 startActivity(mHomeIntent);  
+            	 break;
+             case R.id.back:
+            	 mCamera.setPreviewCallback(null) ;
+             	mCamera.stopPreview();
+             
+             	mCamera.release();
+             	mCamera = null;
+             	System.out.println("camera release!");
+             	System.exit(0);
+             	break;
              default:
                 	  break;
 			 }
@@ -778,7 +824,7 @@ public class CameraActivity extends Activity implements
         	 mBitmapHeight = mBitmap.getHeight();
         	 //显示原始图片
         	 mDrawIV.setImageBitmap(mBitmap);
-        	 
+        	
         	 //灰度化
         	 grayBitmap = Bitmap.createBitmap(mBitmap.getWidth(), mBitmap.getHeight(), Config.RGB_565);  
         	 Utils.bitmapToMat(mBitmap, rgbMat);//convert original bitmap to Mat, R G B.  

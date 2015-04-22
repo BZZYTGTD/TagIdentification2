@@ -3,21 +3,26 @@
     android:gravity="center_horizontal|center_vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-   android:background="@drawable/bg_51" 
-   android:id="@+id/soso">
-  
-   <!--  
-    <Button
-    android:id="@+id/soso"
-    android:text="喵喵，是不是又想吃零食啦？快去测测今天超标了没吧"
-   
-    android:layout_centerHorizontal="true"
-    android:textSize="30sp"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-  	android:layout_gravity="center"
-    android:gravity="center"
-   
-    />--> 
+   android:background="@drawable/cb1" 
+  android:id="@+id/is"
+  >
+
+    <ImageButton
+        android:id="@+id/soso"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:background="@drawable/c1"
+        android:gravity="center"
+        android:textSize="30sp" />
+
+    <ImageButton
+        android:id="@+id/chi"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/soso"
+        android:layout_below="@+id/soso"
+        android:background="@drawable/chi"
+        android:gravity="center"
+        android:textSize="30sp" />
  
 </RelativeLayout>

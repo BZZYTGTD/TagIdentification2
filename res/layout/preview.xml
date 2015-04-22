@@ -1,26 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-   android:id="@+id/linearLayout01"
-   android:background="#292421" >
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
 
   
   <!--   <FrameLayout  
         android:layout_width="wrap_content"  
         android:layout_height="wrap_content" > --> 
-      <RelativeLayout
+     <!--   <RelativeLayout
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:gravity="center_horizontal|center_vertical"
  	android:layout_gravity="center_horizontal|center_vertical" 
 
-    >
-    
-         
-    
- 	
+    >--> 
+     
+  <!--   <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true" > -->
  	
   <SurfaceView
     android:id="@+id/camera_preview"
@@ -32,37 +31,98 @@
     <com.example.tagidentification.DrawImageView  
              android:id="@+id/drawIV"  
              android:layout_width="wrap_content"  
-             android:layout_height="wrap_content" />
-    <LinearLayout
-          android:layout_width="match_parent"
+             android:layout_height="wrap_content" >
+    </com.example.tagidentification.DrawImageView>
+  <!--  
+    <com.example.tagidentification.DrawImageView2
+       android:id="@+id/drawIV2"  
+             android:layout_width="wrap_content"  
+             android:layout_height="wrap_content" 
+             android:layout_below="@id/drawIV"/> --> 
+  <!--  </FrameLayout> --> 
+  <!-- 
+<LinearLayout
+    android:id="@+id/linearLayout01"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center_horizontal|center_vertical"
-    android:orientation="vertical" 
-        android:layout_below="@id/drawIV"
-        >
-        
-        
-       <Button
-        android:id="@+id/button_capture"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"      
-        android:text="Capture"        
-       android:background="@drawable/button_color" 
-         />
-      <!-- 	android:layout_centerHorizontal="true"
-      	android:layout_centerVertical="true" -->
-   
-       <Button
-        android:id="@+id/button_UpLoading"
+    android:gravity="center"
+    android:orientation="horizontal"
+    android:layout_below="@id/drawIV" > -->
+       <!--
+    <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/Uploading"
-      	android:background="@drawable/button_color" 
-      	android:layout_marginTop="3dp"
+        android:background="@drawable/log"
+        
+        />--> 
+        
+        <!-- 
+      </LinearLayout>    -->
+	 <!-- 
+       <Button
+           android:id="@+id/button_capture"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_alignParentBottom="true"
+           android:layout_marginLeft="80dp"
+           android:layout_marginBottom="10dp"
+           android:background="@drawable/button_color"
+           android:text="Capture" 
+          
+           />
+
+       <Button
+           android:id="@+id/button_UpLoading"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+          android:layout_alignParentBottom="true"
+          android:layout_alignBaseline="@id/button_capture"
+          android:layout_toRightOf="@id/button_capture"
+           android:background="@drawable/button_color"
+           android:text="@string/Uploading" 
+         android:layout_marginLeft="5dp"
+           />--> 
+           	
+    <ImageButton
+         android:id="@+id/button_capture"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_alignParentBottom="true"
+           android:layout_centerHorizontal="true"
+        android:background="@drawable/b_10"
         />
-    
-         </LinearLayout>
-       
-  
-       </RelativeLayout>  
-</LinearLayout>
+    <ImageButton
+         android:id="@+id/goHome"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+        android:background="@drawable/b_07"
+        android:layout_toLeftOf="@id/button_capture"
+        android:layout_marginRight="5dp"
+        />
+    <ImageButton 
+        android:id="@+id/button_UpLoading"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+          android:layout_alignParentBottom="true"
+          android:layout_alignBaseline="@id/button_capture"
+          android:layout_toRightOf="@id/button_capture"
+          android:layout_marginLeft="5dp"
+        android:background="@drawable/b_04"
+        />
+
+    <ImageButton
+        android:id="@+id/PictureFromFile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/b_03" />
+<ImageButton
+        android:id="@+id/back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/back" />
+</RelativeLayout>
