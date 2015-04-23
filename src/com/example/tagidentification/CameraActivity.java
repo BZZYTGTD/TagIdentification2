@@ -155,7 +155,7 @@ public class CameraActivity extends Activity implements
         mScreenWidth = display.getWidth();//1080
         mFocusTop = mFocusLeft = (mScreenWidth * 3) / 8;
         mFocusWidth = mFocusHeight = mScreenWidth / 4;
-        top = (mScreenHeight-mScreenWidth)/3; 
+        top = (mScreenHeight-mScreenWidth)*3/8; 
        
          
 
@@ -333,9 +333,14 @@ public class CameraActivity extends Activity implements
  	    		    // 重新预览
  	    	        mCamera.stopPreview();
  	    	        mCamera.startPreview();
+ 	    	        
  	    	        bitmap.recycle();//回收bitmap
  	    	        rotaBitmap.recycle();
  	    	        sizeBitmap.recycle();
+ 	    	       bitmap = null;
+ 	    	      rotaBitmap = null;
+ 	    	     sizeBitmap = null;
+ 	    	    
  	    	       break;
 			default:
 					break;
@@ -559,6 +564,9 @@ public class CameraActivity extends Activity implements
          	bitmap.recycle();//回收bitmap
 	        rotaBitmap.recycle();
 	        sizeBitmap.recycle();
+	        bitmap = null;
+	        rotaBitmap = null;
+	        sizeBitmap = null;
 		    // 重新预览
 	        mCamera.stopPreview();
 	        mCamera.startPreview();
@@ -782,7 +790,7 @@ public class CameraActivity extends Activity implements
             	 mCamera.autoFocus(this);//自动聚焦
             	 break;
              case R.id.button_UpLoading:
-            	 Toast.makeText(this, "Start UpLoading", Toast.LENGTH_SHORT).show();
+            	 Toast.makeText(this, "Start Uploading", Toast.LENGTH_SHORT).show();
             	 mBitmap = readPhotos(sizeBitmap);
             	 processPhotos(mBitmap);
             	  break;
@@ -826,6 +834,7 @@ public class CameraActivity extends Activity implements
         	 mDrawIV.setImageBitmap(mBitmap);
         	
         	 //灰度化
+
         	 grayBitmap = Bitmap.createBitmap(mBitmap.getWidth(), mBitmap.getHeight(), Config.RGB_565);  
         	 Utils.bitmapToMat(mBitmap, rgbMat);//convert original bitmap to Mat, R G B.  
         	 Imgproc.cvtColor(rgbMat, grayMat, Imgproc.COLOR_RGB2GRAY);//rgbMat to gray grayMat  
@@ -902,7 +911,8 @@ public class CameraActivity extends Activity implements
         	 results.putExtra("IMAGE_PATH", jpegName);
         	 results.putExtra("RESULT_PATH", resultUrl);
         	 startActivity(results);
-			
+        	 
+        	
 		}
 		
    

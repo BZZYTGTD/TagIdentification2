@@ -11,6 +11,7 @@ import java.io.UnsupportedEncodingException;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.widget.TextView;
 
@@ -106,7 +107,14 @@ public class ResultsActivity extends Activity {
 
 		private final String _message;
 	}
-
+	@Override  
+	public boolean onKeyDown(int keyCode, KeyEvent event) {  
+	    if(event.getAction() == KeyEvent.ACTION_DOWN && KeyEvent.KEYCODE_BACK == keyCode) {    
+	    	        	System.exit(0);
+        return true;    
+	    }    
+	    return super.onKeyDown(keyCode, event);    
+	}
 	
 	
 }

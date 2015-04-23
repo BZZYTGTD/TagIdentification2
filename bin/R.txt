@@ -25,7 +25,9 @@ int drawable intro1_item_1 0x7f020013
 int drawable k1 0x7f020014
 int drawable k2 0x7f020015
 int drawable log 0x7f020016
-int drawable x1 0x7f020017
+int drawable log1 0x7f020017
+int drawable log2 0x7f020018
+int drawable x1 0x7f020019
 int id PictureFromFile 0x7f050011
 int id any 0x7f050000
 int id back 0x7f050001
