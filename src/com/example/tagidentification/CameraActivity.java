@@ -324,7 +324,7 @@ public class CameraActivity extends Activity implements
  	        	  width = rotaBitmap.getWidth();
  	        	  height = rotaBitmap.getWidth();
  	          }
- 	          sizeBitmap = Bitmap.createBitmap(rotaBitmap, 0,0,width, height);  
+ 	          sizeBitmap = Bitmap.createBitmap(rotaBitmap, 0,top,width, height);  
  	    	     //  System.out.println("sizeBitmap.getWidth()"+sizeBitmap.getWidth()+"sizeBitmap.getHeight()"+sizeBitmap.getHeight());
  	             if(null != sizeBitmap)  {
  	    	        		 savePhotos(sizeBitmap);
